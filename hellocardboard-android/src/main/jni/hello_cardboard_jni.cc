@@ -57,19 +57,16 @@ JNI_METHOD(void, nativeOnDestroy)
 }
 
 JNI_METHOD(void, nativeOnSurfaceCreated)
-(JNIEnv* env, jobject /*obj*/, jlong native_app) {
-  native(native_app)->OnSurfaceCreated(env);
+(JNIEnv* env, jobject /*obj*/, jlong native_app, jint ModeMesure) {
+  native(native_app)->OnSurfaceCreated(env, ModeMesure);
 }
 
 JNI_METHOD(void, nativeOnDrawFrame)
-(JNIEnv* /*env*/, jobject /*obj*/, jlong native_app) {
-  native(native_app)->OnDrawFrame();
+(JNIEnv* /*env*/, jobject /*obj*/, jlong native_app, jint tourne) {
+  native(native_app)->OnDrawFrame(tourne);
 }
 
-JNI_METHOD(void, nativeOnTriggerEvent)
-(JNIEnv* /*env*/, jobject /*obj*/, jlong native_app) {
-  native(native_app)->OnTriggerEvent();
-}
+
 
 JNI_METHOD(void, nativeOnPause)
 (JNIEnv* /*env*/, jobject /*obj*/, jlong native_app) {
@@ -91,4 +88,9 @@ JNI_METHOD(void, nativeSwitchViewer)
   native(native_app)->SwitchViewer();
 }
 
+
+JNI_METHOD(jfloat, getAngle)
+(JNIEnv* /*env*/, jobject /*obj*/, jlong native_app) {
+  return (native(native_app)->GetAngle());
+}
 }  // extern "C"

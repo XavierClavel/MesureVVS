@@ -23,9 +23,21 @@
 #include <array>
 #include <cmath>
 #include <fstream>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
+//#include "Matrix.h"
+#include <cardboard.h>
+#include <iostream>
+#include "time.h"
+#include <string>
 
-#include "cardboard.h"
 
+//#include <systemclock>
+
+class numeric_limits;
+
+using namespace std;
 namespace ndk_hello_cardboard {
 
 namespace {
@@ -75,6 +87,11 @@ constexpr const char* kObjFragmentShader =
       gl_FragColor = texture2D(u_Texture, vec2(v_UV.x, 1.0 - v_UV.y));
     })glsl";
 
+
+  long delta_time ; //Vitesse de rotation de la barre
+  long delta_time_room;//Vitesse de rotation de la piece
+  float mAngleRoom;//Angle de rotation de la piece
+  float mAngle =0.9f;//Angle de rotation de la barre, initialisé à 0.9 radians pour qu'elle ne soit pas verticale
 }  // anonymous namespace
 
 HelloCardboardApp::HelloCardboardApp(JavaVM* vm, jobject obj,
@@ -94,9 +111,7 @@ HelloCardboardApp::HelloCardboardApp(JavaVM* vm, jobject obj,
       obj_uv_param_(0),
       obj_modelview_projection_param_(0),
       target_object_meshes_(kTargetMeshCount),
-      target_object_not_selected_textures_(kTargetMeshCount),
-      target_object_selected_textures_(kTargetMeshCount),
-      cur_target_object_(RandomUniformInt(kTargetMeshCount)) {
+      target_object_selected_textures_(kTargetMeshCount){
   JNIEnv* env;
   vm->GetEnv((void**)&env, JNI_VERSION_1_6);
   java_asset_mgr_ = env->NewGlobalRef(asset_mgr_obj);
@@ -104,7 +119,9 @@ HelloCardboardApp::HelloCardboardApp(JavaVM* vm, jobject obj,
 
   Cardboard_initializeAndroid(vm, obj);
   head_tracker_ = CardboardHeadTracker_create();
+
 }
+
 
 HelloCardboardApp::~HelloCardboardApp() {
   CardboardHeadTracker_destroy(head_tracker_);
@@ -112,7 +129,7 @@ HelloCardboardApp::~HelloCardboardApp() {
   CardboardDistortionRenderer_destroy(distortion_renderer_);
 }
 
-void HelloCardboardApp::OnSurfaceCreated(JNIEnv* env) {
+void HelloCardboardApp::OnSurfaceCreated(JNIEnv* env, int ModeMesure) {
   const int obj_vertex_shader =
       LoadGLShader(GL_VERTEX_SHADER, kObjVertexShader);
   const int obj_fragment_shader =
@@ -133,32 +150,32 @@ void HelloCardboardApp::OnSurfaceCreated(JNIEnv* env) {
   CHECKGLERROR("Obj program params");
 
   HELLOCARDBOARD_CHECK(room_.Initialize(obj_position_param_, obj_uv_param_,
-                                        "CubeRoom.obj", asset_mgr_));
-  HELLOCARDBOARD_CHECK(
-      room_tex_.Initialize(env, java_asset_mgr_, "CubeRoom_BakedDiffuse.png"));
+                                        "Reverse1.obj", asset_mgr_));
+  if (ModeMesure == 0){
+    HELLOCARDBOARD_CHECK(
+            room_tex_.Initialize(env, java_asset_mgr_, "black2.png"));
+            LOGD("MESURE SIMPLE");
+  } else if (ModeMesure == 1){
+    HELLOCARDBOARD_CHECK(
+            room_tex_.Initialize(env, java_asset_mgr_, "dynamique2.png"));
+            LOGD("MESURE DYNAMIQUE");
+  } else {
+    HELLOCARDBOARD_CHECK(
+            room_tex_.Initialize(env, java_asset_mgr_, "black2.png"));
+  }
+
   HELLOCARDBOARD_CHECK(target_object_meshes_[0].Initialize(
-      obj_position_param_, obj_uv_param_, "Icosahedron.obj", asset_mgr_));
-  HELLOCARDBOARD_CHECK(target_object_not_selected_textures_[0].Initialize(
-      env, java_asset_mgr_, "Icosahedron_Blue_BakedDiffuse.png"));
+      obj_position_param_, obj_uv_param_, "circle2.obj", asset_mgr_));
+
   HELLOCARDBOARD_CHECK(target_object_selected_textures_[0].Initialize(
-      env, java_asset_mgr_, "Icosahedron_Pink_BakedDiffuse.png"));
-  HELLOCARDBOARD_CHECK(target_object_meshes_[1].Initialize(
-      obj_position_param_, obj_uv_param_, "QuadSphere.obj", asset_mgr_));
-  HELLOCARDBOARD_CHECK(target_object_not_selected_textures_[1].Initialize(
-      env, java_asset_mgr_, "QuadSphere_Blue_BakedDiffuse.png"));
-  HELLOCARDBOARD_CHECK(target_object_selected_textures_[1].Initialize(
-      env, java_asset_mgr_, "QuadSphere_Pink_BakedDiffuse.png"));
-  HELLOCARDBOARD_CHECK(target_object_meshes_[2].Initialize(
-      obj_position_param_, obj_uv_param_, "TriSphere.obj", asset_mgr_));
-  HELLOCARDBOARD_CHECK(target_object_not_selected_textures_[2].Initialize(
-      env, java_asset_mgr_, "TriSphere_Blue_BakedDiffuse.png"));
-  HELLOCARDBOARD_CHECK(target_object_selected_textures_[2].Initialize(
-      env, java_asset_mgr_, "TriSphere_Pink_BakedDiffuse.png"));
+      env, java_asset_mgr_, "white.png"));
+
 
   // Target object first appears directly in front of user.
   model_target_ = GetTranslationMatrix({0.0f, 1.5f, kMinTargetDistance});
 
   CHECKGLERROR("OnSurfaceCreated");
+
 }
 
 void HelloCardboardApp::SetScreenParams(int width, int height) {
@@ -167,7 +184,7 @@ void HelloCardboardApp::SetScreenParams(int width, int height) {
   screen_params_changed_ = true;
 }
 
-void HelloCardboardApp::OnDrawFrame() {
+void HelloCardboardApp::OnDrawFrame(int tourne) {
   if (!UpdateDeviceParams()) {
     return;
   }
@@ -204,7 +221,7 @@ void HelloCardboardApp::OnDrawFrame() {
     modelview_projection_room_ = projection_matrix * eye_view;
 
     // Draw room and target
-    DrawWorld();
+    DrawWorld(tourne);
   }
 
   // Render
@@ -216,11 +233,9 @@ void HelloCardboardApp::OnDrawFrame() {
   CHECKGLERROR("onDrawFrame");
 }
 
-void HelloCardboardApp::OnTriggerEvent() {
-  if (IsPointingAtTarget()) {
-    HideTarget();
-  }
-}
+
+
+
 
 void HelloCardboardApp::OnPause() { CardboardHeadTracker_pause(head_tracker_); }
 
@@ -347,6 +362,7 @@ void HelloCardboardApp::GlSetup() {
                             GL_RENDERBUFFER, depthRenderBuffer_);
 
   CHECKGLERROR("GlSetup");
+
 }
 
 void HelloCardboardApp::GlTeardown() {
@@ -366,6 +382,11 @@ void HelloCardboardApp::GlTeardown() {
 Matrix4x4 HelloCardboardApp::GetPose() {
   std::array<float, 4> out_orientation;
   std::array<float, 3> out_position;
+  char vOut [256];
+
+  sprintf(vOut,"%f",std::get<0>(out_position));
+
+
   CardboardHeadTracker_getPose(
       head_tracker_, GetBootTimeNano() + kPredictionTimeWithoutVsyncNanos,
       kLandscapeLeft, &out_position[0], &out_orientation[0]);
@@ -373,34 +394,75 @@ Matrix4x4 HelloCardboardApp::GetPose() {
          Quatf::FromXYZW(&out_orientation[0]).ToMatrix();
 }
 
-void HelloCardboardApp::DrawWorld() {
+void HelloCardboardApp::DrawWorld(int tourne) {
   DrawRoom();
-  DrawTarget();
+  DrawTarget(tourne);
 }
 
-void HelloCardboardApp::DrawTarget() {
+void HelloCardboardApp::DrawTarget(int tourne) {
+
+  Matrix4x4 mRotate;
+  //Gestion de la variable tourne, qui fait tourner la barre dans un sens ou dans l'autre.
+  //tourne = 10 pour reinisialiser sa position.
+  if (tourne == 1){
+    delta_time += 1;
+
+
+  } else if (tourne == -1){
+    delta_time -= 1;
+
+  } else if (tourne == 10){
+      delta_time += 1000;
+  }
+
+  mAngle = 0.01f*delta_time;
+  mRotate = GetRotationMatrixZ(mAngle);
+  modelview_projection_target_ = modelview_projection_target_ * mRotate ;
   glUseProgram(obj_program_);
 
   std::array<float, 16> target_array = modelview_projection_target_.ToGlArray();
   glUniformMatrix4fv(obj_modelview_projection_param_, 1, GL_FALSE,
                      target_array.data());
 
-  if (IsPointingAtTarget()) {
-    target_object_selected_textures_[cur_target_object_].Bind();
-  } else {
-    target_object_not_selected_textures_[cur_target_object_].Bind();
-  }
-  target_object_meshes_[cur_target_object_].Draw();
+
+  target_object_selected_textures_[0].Bind();
+
+
+
+
+
+
+  target_object_meshes_[0].Draw();
+
+
+
+
 
   CHECKGLERROR("DrawTarget");
 }
 
+float HelloCardboardApp::GetAngle(){
+
+  float angle;
+  angle = mAngle;
+
+  return (angle);
+
+}
+
+
 void HelloCardboardApp::DrawRoom() {
   glUseProgram(obj_program_);
-
+  Matrix4x4 mRotateRoom;
+  //La pièce tourne, pour la VVS dynamique
+  delta_time_room += 1;
+  mAngleRoom = 0.005f*delta_time_room;
+  mRotateRoom = GetRotationMatrixZ(mAngleRoom);
+  modelview_projection_room_ = modelview_projection_room_ * mRotateRoom ;
   std::array<float, 16> room_array = modelview_projection_room_.ToGlArray();
   glUniformMatrix4fv(obj_modelview_projection_param_, 1, GL_FALSE,
                      room_array.data());
+
 
   room_tex_.Bind();
   room_.Draw();
@@ -408,17 +470,7 @@ void HelloCardboardApp::DrawRoom() {
   CHECKGLERROR("DrawRoom");
 }
 
-void HelloCardboardApp::HideTarget() {
-  cur_target_object_ = RandomUniformInt(kTargetMeshCount);
 
-  float angle = RandomUniformFloat(-M_PI, M_PI);
-  float distance = RandomUniformFloat(kMinTargetDistance, kMaxTargetDistance);
-  float height = RandomUniformFloat(kMinTargetHeight, kMaxTargetHeight);
-  std::array<float, 3> target_position = {std::cos(angle) * distance, height,
-                                          std::sin(angle) * distance};
-
-  model_target_ = GetTranslationMatrix(target_position);
-}
 
 bool HelloCardboardApp::IsPointingAtTarget() {
   // Compute vectors pointing towards the reticle and towards the target object
@@ -432,5 +484,8 @@ bool HelloCardboardApp::IsPointingAtTarget() {
   float angle = AngleBetweenVectors(point_vector, target_vector);
   return angle < kAngleLimit;
 }
+
+
+
 
 }  // namespace ndk_hello_cardboard

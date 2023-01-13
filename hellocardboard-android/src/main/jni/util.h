@@ -83,6 +83,15 @@ Matrix4x4 GetMatrixFromGlArray(float* vec);
 Matrix4x4 GetTranslationMatrix(const std::array<float, 3>& translation);
 
 /**
+ * Construct a rotation matrix.
+ *
+ * @param Rotation angle
+ * @return Obtained matrix
+ */
+ Matrix4x4 GetRotationMatrixZ(const float& angle);
+
+
+    /**
  * Computes the angle between two vectors.
  *
  * @param vec1 First vector

@@ -54,7 +54,7 @@ class HelloCardboardApp {
    *
    * @param env The JNI environment.
    */
-  void OnSurfaceCreated(JNIEnv* env);
+  void OnSurfaceCreated(JNIEnv* env, int ModeMesure);
 
   /**
    * Sets screen parameters.
@@ -67,12 +67,8 @@ class HelloCardboardApp {
   /**
    * Draws the scene. This should be called on the rendering thread.
    */
-  void OnDrawFrame();
+  void OnDrawFrame(int tourne);
 
-  /**
-   * Hides the target object if it's being targeted.
-   */
-  void OnTriggerEvent();
 
   /**
    * Pauses head tracking.
@@ -89,7 +85,14 @@ class HelloCardboardApp {
    */
   void SwitchViewer();
 
- private:
+
+/**
+ * Gets the angle.
+ * @return The angle of the white bar
+ */
+ float GetAngle();
+
+private:
   /**
    * Default near clip plane z-axis coordinate.
    */
@@ -127,22 +130,22 @@ class HelloCardboardApp {
   /**
    * Draws all world-space objects for the given eye.
    */
-  void DrawWorld();
+  void DrawWorld(int tourne);
+
+
+
 
   /**
    * Draws the target object.
    */
-  void DrawTarget();
+  void DrawTarget(int tourne);
 
-  /**
-   * Draws the room.
-   */
+    /**
+     * Draws the room.
+     */
   void DrawRoom();
 
-  /**
-   * Finds a new random position for the target object.
-   */
-  void HideTarget();
+
 
   /**
    * Checks if user is pointing or looking at the target object by calculating
@@ -190,9 +193,9 @@ class HelloCardboardApp {
   Texture room_tex_;
 
   std::vector<TexturedMesh> target_object_meshes_;
-  std::vector<Texture> target_object_not_selected_textures_;
+
   std::vector<Texture> target_object_selected_textures_;
-  int cur_target_object_;
+
 };
 
 }  // namespace ndk_hello_cardboard

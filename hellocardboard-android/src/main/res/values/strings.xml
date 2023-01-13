@@ -2,7 +2,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name"
             description="Application name. [CHAR_LIMIT=30]">
-            Hello Cardboard</string>
+            Mesure VVS</string>
 
     <!-- Strings present in 'VR' activity -->
     <string name="title_activity_vr"
@@ -22,4 +22,22 @@
             description="Short text shown on the settings menu to let the user switch viewer.
                          [CHAR_LIMIT=30]">
             Switch Cardboard viewer</string>
+
+    <string name="title_activity_manette">Manette</string>
+    <string name="title_connecting">connecting...</string>
+    <string name="title_not_connected">not connected</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="button_connect">Connect to device</string>
+    <string name="button_scan">Scan for devices</string>
+    <string name="btn_manette">Manette</string>
+    <string name="btn_ecran">Ecran</string>
+    <string name="display_result">Result=</string>
+    <string name="btn_stop">Stop</string>
+    <string name="btn_result">result</string>
+    <string name="btn_adjust_left">Adjust Left</string>
+    <string name="btn_continuous_left">Continuous Left</string>
+    <string name="btn_adjust_right">Adjust Right</string>
+    <string name="btn_continuous_right">Continuous Right</string>
+    <string name="permission_bluetooth_rationale">Le bluetooth est nécessaire pour connecter la manette au casque VR</string>
 </resources>

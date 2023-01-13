@@ -419,6 +419,17 @@ Matrix4x4 GetTranslationMatrix(const std::array<float, 3>& translation) {
            {translation.at(0), translation.at(1), translation.at(2), 1.0f}}};
 }
 
+
+Matrix4x4 GetRotationMatrixZ (const float& angle){
+  float cosangle = cos(angle);
+  float sinangle = sin(angle);
+  return {{{cosangle, sinangle, 0.0f, 0.0f},
+                  {-sinangle,cosangle, 0.0f, 0.0f},
+                  {0.0f, 0.0f, 1.0f, 0.0f},
+                  {0.0f, 0.0f, 0.0f, 1.0f}}};
+
+}
+
 float AngleBetweenVectors(const std::array<float, 4>& vec1,
                           const std::array<float, 4>& vec2) {
   return std::acos(
@@ -504,9 +515,10 @@ void TexturedMesh::Draw() const {
                         vertices_.data());
   glEnableVertexAttribArray(uv_attrib_);
   glVertexAttribPointer(uv_attrib_, 2, GL_FLOAT, false, 0, uv_.data());
-
+  
   glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_SHORT,
                  indices_.data());
+
 }
 
 Texture::~Texture() {
@@ -538,5 +550,6 @@ void Texture::Bind() const {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture_id_);
 }
+
 
 }  // namespace ndk_hello_cardboard
