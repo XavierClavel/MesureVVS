@@ -75,10 +75,12 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     Button mbuttonFakeVVS;
 
     int modeMesure;
+    public static HomeActivity instance;
 
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_home);
+        instance = this;
 
         // Récupération des références aux éléments graphiques
         mbuttonManette = findViewById(R.id.manette);
@@ -137,6 +139,9 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                                 .setTitle(mEditTextNom.getText().toString())
                                 .setMessage(alertMessage)
                                 .setCancelable(true).create().show();
+
+                XmlManager.Write("testFile", arrayScore);
+                XmlManager.Read("testFile");
             }
         });
 
@@ -249,6 +254,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         }
     };
 
+    static ArrayList<Float> arrayScore;
+
     /**
      * Gestion des résultats des activités VrActivity et l'activation du buetooth
      * @param requestCode
@@ -262,7 +269,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         if (requestCode == REQUEST_CODE_ECRAN_ACTIVITY && resultCode == RESULT_OK && data != null) {
             Log.i(TAG, "Received result from Ecran");
             // Ajout des scores au fichier de préférences
-            ArrayList<Float> arrayScore =(ArrayList<Float>)  data.getSerializableExtra(VrActivity.RESULT_SCORE);
+            arrayScore =(ArrayList<Float>)  data.getSerializableExtra(VrActivity.RESULT_SCORE);
             String score = arrayScore.stream().map(Object::toString).collect(Collectors.joining(", "));
 
             //save the last measurement
