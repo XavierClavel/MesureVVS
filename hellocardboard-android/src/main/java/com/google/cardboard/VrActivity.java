@@ -237,8 +237,8 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
               @Override
               public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent();
-                intent.putExtra(RESULT_SCORE, mScore);
-                setResult(Activity.RESULT_OK, intent);
+                intent.putExtra(RESULT_SCORE, mScore);  //request code
+                setResult(Activity.RESULT_OK, intent);  //result code
                 finish();
               }
             })

@@ -111,15 +111,34 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tvfichepatient"
+        android:id="@+id/placeholderText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/ecran"
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="Temp"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/placeholderButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/placeholderText"
+        android:text="Fake VVS" />
+
+    <TextView
+        android:id="@+id/tvfichepatient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/placeholderButton"
         android:gravity="center"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:text="Fiche patient"
         android:textSize="20sp" />
+    <!--android:layout_below="@id/ecran"-->
 
     <Button
         android:id="@+id/openusrdata"

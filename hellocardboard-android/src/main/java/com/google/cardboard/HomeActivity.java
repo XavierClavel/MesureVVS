@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
+/*
  * Activité principale, permet :
  *  - le choix du nom du patient
  *  - le choix du nombre de mesures
@@ -72,6 +72,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     EditText mEditTextNom;
     TextView mtextMesures;
     //Button mbuttonTutoriel;
+    Button mbuttonFakeVVS;
 
     int modeMesure;
 
@@ -79,7 +80,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_home);
 
-        // Initialisation des éléments graphiques
+        // Récupération des références aux éléments graphiques
         mbuttonManette = findViewById(R.id.manette);
         //mbuttonTutoriel = findViewById(R.id.tutoriel);
         mbuttonEcran = findViewById(R.id.ecran);
@@ -89,6 +90,22 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mtextMesures = findViewById(R.id.tvNbMesures);
         mtoggleSimple = findViewById(R.id.tbSimple);
         mtoggleDynamique = findViewById(R.id.tbDynamique);
+
+        mbuttonFakeVVS = findViewById(R.id.placeholderButton); //to delete
+        mbuttonFakeVVS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
+                        .edit()
+                        .putString(SHARED_PREF_USER_INFO_NAME, mEditTextNom.getText().toString())
+                        .apply();
+                Intent intentEcran = new Intent((Context) getBaseContext(), PlaceholderActivity.class);
+                intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));
+                intentEcran.putExtra("modeMesure", modeMesure);
+                //startActivity(intentEcran);
+                startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
+            }
+        });
 
         mtextMesures.setText(String.valueOf(mseekMesures.getProgress()));
         mbuttonEcran.setEnabled(false);
@@ -106,12 +123,15 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public void onClick(View view) {
                 String alertMessage;
-                String currentScore = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_SCORE, "Réaliser une mesure pour afficher le résultat");
+                 String currentScore = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_SCORE, "Réaliser une mesure pour afficher le résultat");
                 String currentName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_NAME, "Test");
                 if (!currentName.equals(mEditTextNom.getText().toString())) {
                     alertMessage = "Réaliser une mesure pour afficher le résultat";
                 } else {
-                    alertMessage = currentScore;
+                    alertMessage = new String();
+                    for (String string : currentScore.split(" ")) {
+                        alertMessage = alertMessage + string + "\n";
+                    }
                 }
                 new AlertDialog.Builder(HomeActivity.this)
                                 .setTitle(mEditTextNom.getText().toString())
@@ -239,11 +259,13 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // L'activité VrActivity s'est terminée et renvoie les résultats de la mesure
-        if (REQUEST_CODE_ECRAN_ACTIVITY == requestCode && RESULT_OK == resultCode && data != null) {
-            Log.i(TAG, "Recieved result from Ecran");
+        if (requestCode == REQUEST_CODE_ECRAN_ACTIVITY && resultCode == RESULT_OK && data != null) {
+            Log.i(TAG, "Received result from Ecran");
             // Ajout des scores au fichier de préférences
             ArrayList<Float> arrayScore =(ArrayList<Float>)  data.getSerializableExtra(VrActivity.RESULT_SCORE);
             String score = arrayScore.stream().map(Object::toString).collect(Collectors.joining(", "));
+
+            //save the last measurement
             getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
                     .edit()
                     .putString(SHARED_PREF_USER_INFO_SCORE, score)
