@@ -31,20 +31,21 @@ public class XmlManager {
     static String defaultFilename = "scan_data";
     public static boolean autoUpdate = false;
 
-    public static List<Float> dataMemory;
+    public static List<Float> dataMemory = new ArrayList<>();
     static String xmlDebugFile;
+    public static List<PatientData> patientFiles = new ArrayList<>();
 
 
-    public static void Write(String filename, List<Float> data) {
-        dataMemory = data;
+    public static void Write(PatientData patientData) {
+        dataMemory = patientData.measurement;
         Log.d("xml manager", "starting to write data");
         //printXML();
         try {
             File dir = HomeActivity.instance.getFilesDir();
-            File file = new File(dir, filename);
+            File file = new File(dir, patientData.filename);
             boolean deleted = file.delete();
             Log.d("deleted", "" + deleted);
-            FileOutputStream fos = HomeActivity.instance.openFileOutput(filename, Context.MODE_APPEND);
+            FileOutputStream fos = HomeActivity.instance.openFileOutput(patientData.filename, Context.MODE_APPEND);
             XmlSerializer serializer = Xml.newSerializer();
             serializer.setOutput(fos, "UTF-8"); //definit le fichier de sortie
             serializer.startDocument("UTF-8", true);
@@ -53,6 +54,8 @@ public class XmlManager {
             serializer.flush();
             fos.close();
             Log.d("xml manager", "end of writing operation");
+
+
         } catch (Exception e) {
             Log.d("Xml manager", "failed to write data in xml file");
         }
@@ -63,6 +66,18 @@ public class XmlManager {
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
             serializer.startTag("", "root");
             for (float measurementValue : dataMemory) {
+
+                serializer.startTag("", "name");
+                serializer.text(measurementValue + "");
+                serializer.endTag("", "name");
+
+                serializer.startTag("", "genre");
+                serializer.text(measurementValue + "");
+                serializer.endTag("", "genre");
+
+                serializer.startTag("", "age");
+                serializer.text(measurementValue + "");
+                serializer.endTag("", "age");
 
                 serializer.startTag("", "measurement");
                 serializer.text(measurementValue + "");
@@ -127,11 +142,20 @@ public class XmlManager {
             dom = db.parse(is);
             dom.getDocumentElement().normalize();
             //get all measurement tags
+            items = dom.getElementsByTagName("name");
+            String name = items.item(0).getTextContent();
+
+            items = dom.getElementsByTagName("genre");
+            genreType genre = genreType.valueOf(items.item(0).getTextContent());
+
+            items = dom.getElementsByTagName("age");
+            int age = Integer.parseInt(items.item(0).getTextContent());
+
             items = dom.getElementsByTagName("measurement");
             Log.d("xml manager", "nb of xml measurements = " + items.getLength());
-            for (int i=0; i<items.getLength(); i++){
-               Log.d("measurement value : ",items.item(i).getTextContent());
-            }
+
+            new PatientData(name, genre, age, filename);
+
             Log.d("xml parser", "successfully read data");
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -146,7 +170,7 @@ public class XmlManager {
 
     }
 
-    public static List<PatientData> ReadHistory() {
+    public static void ReadHistory() {
 
 
         File dir = HomeActivity.instance.getFilesDir();
@@ -180,8 +204,9 @@ public class XmlManager {
                 String name = measure.getElementsByTagName("name").item(0).getTextContent();
                 String date = measure.getElementsByTagName("date").item(0).getTextContent();
                 String filename = measure.getElementsByTagName("filename").item(0).getTextContent();
-
-                measurementSummaries.add(new PatientData(name, date, filename));
+                genreType genre = genreType.male;
+                int age = 24;
+                measurementSummaries.add(new PatientData(name, genre, age, filename));
             }
             Log.d("xml parser", "successfully read data");
         } catch (ParserConfigurationException e) {
@@ -191,10 +216,11 @@ public class XmlManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return measurementSummaries;
+        patientFiles = measurementSummaries;
+        return;
     }
 
-    public static void WriteHistory(List<PatientData> measurementSummaries) {
+    public static void WriteHistory() {
         Log.d("xml manager", "starting to write data");
         //printXML();
         try {
@@ -206,7 +232,7 @@ public class XmlManager {
             XmlSerializer serializer = Xml.newSerializer();
             serializer.setOutput(fos, "UTF-8"); //definit le fichier de sortie
             serializer.startDocument("UTF-8", true);
-            writeDataHistory(serializer, measurementSummaries);  //reference variable or value variable
+            writeDataHistory(serializer, patientFiles);  //reference variable or value variable
             serializer.endDocument();
             serializer.flush();
             fos.close();

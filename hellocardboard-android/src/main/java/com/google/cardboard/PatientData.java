@@ -1,13 +1,118 @@
 package com.google.cardboard;
 
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+
+import org.w3c.dom.Attr;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+enum genreType {male, female}
+
 public class PatientData {
     public String patientName;
+    public genreType genre;
+    public int age;
+    public String comment;
+
     public String measurementDate;
     public String filename;
+    public List<Float> measurement;
 
-    public PatientData(String patientName, String measurementDate, String filename) {
-        this.patientName = patientName;
-        this.measurementDate = measurementDate;
-        this.filename = filename;
+    public Float mean;
+    public Float variance;
+    public Float standardDeviation;
+
+    RadioGroup patientList;
+
+    private void Calculate() {
+        float mean = 0f;
+        for (Float value : measurement) {
+            mean += value;
+        }
+        mean /= measurement.size();
+        this.mean = mean;
+
+        float variance = 0f;
+        for (Float value : measurement) {
+            variance +=  Math.pow(value-mean,2);
+        }
+        variance /= measurement.size();
+        this.variance = variance;
+        this.standardDeviation = (float) Math.pow(standardDeviation,0.5f);
     }
+
+
+
+    public void AddMeasurement(List<Float> measurement) {
+        this.measurement = measurement;
+        Calculate();
+    }
+
+    public void WriteComment(String comment) {
+        this.comment = comment;
+    }
+
+
+    //Add new client to database
+
+    /**
+     * Add new client to database and generate a new file
+     * @param patientName
+     * @param genre
+     * @param age
+     */
+    public PatientData(String patientName, genreType genre, int age) {
+        this.patientName = patientName;
+        this.genre = genre;
+        this.age = age;
+
+        this.measurementDate = GetFileCreationDate();
+        this.filename = AttributeFileName();
+
+        AddToList();
+    }
+
+    /**
+     * Get reference to an already existing patient data
+     * @param patientName
+     * @param genre
+     * @param age
+     * @param filename
+     */
+    public PatientData(String patientName, genreType genre, int age, String filename) {
+        this.patientName = patientName;
+        this.genre = genre;
+        this.age = age;
+        this.filename = filename;
+
+        AddToList();
+    }
+
+    /**
+     * Generates a new unique filename for the patient
+     * @return
+     */
+    private String AttributeFileName() {
+        return "filename";
+    }
+
+    private String GetFileCreationDate() {
+        Date date = Calendar.getInstance().getTime();
+        return date.toString();
+    }
+
+    public void Save() {
+        XmlManager.Write(this);
+    }
+
+    private void AddToList() {
+        RadioGroup  patientList = HomeActivity.instance.findViewById(R.id.patientList);
+        RadioButton patientButton = new RadioButton(HomeActivity.instance);
+        patientButton.setText(patientName);
+        patientList.addView(patientButton);
+    }
+
 }

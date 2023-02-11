@@ -15,10 +15,16 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -29,6 +35,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,6 +69,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     public static final byte[] byte_t = "t".getBytes();
     public static final byte[] byte_s = "s".getBytes();
 
+    private static PatientData selectedPatient;
+
     BluetoothAdapter bluetoothAdapter;
 
     Button mbuttonManette;
@@ -73,6 +83,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     TextView mtextMesures;
     //Button mbuttonTutoriel;
     Button mbuttonFakeVVS;
+    RelativeLayout patientSelectPanel;
+    RadioGroup patientList;
 
     int modeMesure;
     public static HomeActivity instance;
@@ -81,6 +93,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_home);
         instance = this;
+        XmlManager.ReadHistory();
 
         // Récupération des références aux éléments graphiques
         mbuttonManette = findViewById(R.id.manette);
@@ -92,12 +105,70 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mtextMesures = findViewById(R.id.tvNbMesures);
         mtoggleSimple = findViewById(R.id.tbSimple);
         mtoggleDynamique = findViewById(R.id.tbDynamique);
+        patientSelectPanel = findViewById(R.id.patientSelectionPanel);
+        patientList = findViewById(R.id.patientList);
+        patientList.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                patientSelectPanel.setVisibility(View.GONE);
+                String patientName = "";
+                RadioButton radioButton = radioGroup.findViewById(i);
+                boolean isChecked = radioButton.isChecked();
+                // If the radiobutton that has changed in check state is now checked...
+                if (isChecked) {
+                    patientName = radioButton.getText().toString();
+                    mEditTextNom.setText(patientName);
+                }
+            }
+        });
+
+        new PatientData("bob",genreType.male,28);
+
+        String[] Items = {"Add patient","John Smith","Bob Patrick"};
+
+        ArrayAdapter<String> adapter  = new ArrayAdapter<String>(
+                this,android.R.layout.simple_spinner_item,Items);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //patientSpinner.setAdapter(adapter);
+        /*patientSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            public void onItemSelected(AdapterView<?> arg0,
+                                       View arg1, int arg2, long arg3)
+            {
+                //set selected patient
+                //modify selected patient on result acquired
+                int index = patientSpinner.getSelectedItemPosition();
+                Toast.makeText(getBaseContext(),
+                        "You have selected item : " + Items[index],
+                        Toast.LENGTH_SHORT).show();
+
+                if (index==0)
+                {
+                    EditText edit = (EditText) findViewById(R.id.spinnerText);
+                    Button add=(Button) findViewById(R.id.add);
+                    edit.setVisibility(View.VISIBLE);
+                    add.setVisibility(View.VISIBLE);
+
+
+                }
+                else
+                {
+                    EditText edit = (EditText) findViewById(R.id.spinnerText);
+                    Button add=(Button) findViewById(R.id.add);
+                    edit.setVisibility(View.GONE);
+                    add.setVisibility(View.GONE);
+                }
+            }
+
+            public void onNothingSelected(AdapterView<?> arg0) {}
+        });*/
+
 
         mbuttonFakeVVS = findViewById(R.id.placeholderButton); //to delete
         mbuttonFakeVVS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
+                /*getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
                         .edit()
                         .putString(SHARED_PREF_USER_INFO_NAME, mEditTextNom.getText().toString())
                         .apply();
@@ -105,7 +176,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));
                 intentEcran.putExtra("modeMesure", modeMesure);
                 //startActivity(intentEcran);
-                startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
+                startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);*/
+                patientSelectPanel.setVisibility(View.VISIBLE);
             }
         });
 
@@ -140,8 +212,12 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                                 .setMessage(alertMessage)
                                 .setCancelable(true).create().show();
 
-                XmlManager.Write("testFile", arrayScore);
-                XmlManager.Read("testFile");
+                //XmlManager.Write("testFile", arrayScore);
+                //XmlManager.Read("testFile");
+                //XmlManager.patientFiles.add(new PatientData(currentName, ,"file"));
+                XmlManager.WriteHistory();
+                Intent intent = new Intent(getBaseContext(),FilesDisplayActivity.class);
+                startActivity(intent);
             }
         });
 
