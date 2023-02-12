@@ -29,7 +29,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class XmlManager {
     static String defaultFilename = "scan_data";
-    public static boolean autoUpdate = false;
 
     public static List<Float> dataMemory = new ArrayList<>();
     static String xmlDebugFile;
@@ -168,6 +167,23 @@ public class XmlManager {
         return;
 
 
+    }
+
+    public static void AddToHistory(PatientData patientData) {
+        ReadHistory();
+        patientFiles.add(patientData);
+        WriteHistory();
+    }
+
+    public static void EraseHistory() {
+        try {
+            File dir = HomeActivity.instance.getFilesDir();
+            File file = new File(dir, "history");
+            boolean deleted = file.delete();
+            Log.d("deleted", "" + deleted);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void ReadHistory() {

@@ -166,7 +166,7 @@
                 android:orientation="vertical">
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/patientCreation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="new patient" />
@@ -175,12 +175,6 @@
                     android:id="@+id/patientList"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-
-                    <RadioButton
-                        android:id="@+id/radioButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="RadioButton" />
                 </RadioGroup>
             </LinearLayout>
         </ScrollView>

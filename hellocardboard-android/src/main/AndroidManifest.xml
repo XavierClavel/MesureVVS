@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".PatientCreationActivity"
+            android:exported="false" />
+        <activity
             android:name=".PatientDataDisplay"
             android:exported="false" />
         <activity
@@ -63,18 +66,18 @@
 
     <uses-feature
         android:name="android.hardware.sensor.gyroscope"
-        android:required="true" />
-    <uses-permission android:name="android.permission.CAMERA" /> <!-- Required for Bluetooth Connection -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- Only required for apps targeting Android 12 and higher -->
+        android:required="true" /> <!-- Required for Bluetooth Connection -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Only required for apps targeting Android 12 and higher -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
         android:name="android.permission.BLUETOOTH"
         android:maxSdkVersion="30" />
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" /> <!-- Extra permissions ex: FILE payloads -->
+        android:maxSdkVersion="30" /> <!-- Extra permissions ex: FILE payloads -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation" />

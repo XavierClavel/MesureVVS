@@ -7,7 +7,11 @@ import org.w3c.dom.Attr;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
+
+import androidx.annotation.RequiresPermission;
 
 enum genreType {male, female}
 
@@ -26,6 +30,7 @@ public class PatientData {
     public Float standardDeviation;
 
     RadioGroup patientList;
+    static HashMap<String,PatientData> dictionaryNameToPatient = new HashMap<>();
 
     private void Calculate() {
         float mean = 0f;
@@ -51,7 +56,7 @@ public class PatientData {
         Calculate();
     }
 
-    public void WriteComment(String comment) {
+    public void SetComment(String comment) {
         this.comment = comment;
     }
 
@@ -73,6 +78,8 @@ public class PatientData {
         this.filename = AttributeFileName();
 
         AddToList();
+        this.Save();
+        XmlManager.AddToHistory(this);
     }
 
     /**
@@ -113,6 +120,12 @@ public class PatientData {
         RadioButton patientButton = new RadioButton(HomeActivity.instance);
         patientButton.setText(patientName);
         patientList.addView(patientButton);
+
+        dictionaryNameToPatient.put(patientName, this);
+    }
+
+    public static PatientData getPatient(String name) {
+        return dictionaryNameToPatient.get(name);
     }
 
 }

@@ -85,6 +85,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     Button mbuttonFakeVVS;
     RelativeLayout patientSelectPanel;
     RadioGroup patientList;
+    Button newPatientButton;
 
     int modeMesure;
     public static HomeActivity instance;
@@ -107,6 +108,16 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mtoggleDynamique = findViewById(R.id.tbDynamique);
         patientSelectPanel = findViewById(R.id.patientSelectionPanel);
         patientList = findViewById(R.id.patientList);
+        newPatientButton = findViewById(R.id.patientCreation);
+
+        newPatientButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent((Context) getBaseContext(), PatientCreationActivity.class);
+                startActivity(intent);
+            }
+        });
+
         patientList.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -118,50 +129,10 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 if (isChecked) {
                     patientName = radioButton.getText().toString();
                     mEditTextNom.setText(patientName);
+                    selectedPatient = PatientData.getPatient(patientName);
                 }
             }
         });
-
-        new PatientData("bob",genreType.male,28);
-
-        String[] Items = {"Add patient","John Smith","Bob Patrick"};
-
-        ArrayAdapter<String> adapter  = new ArrayAdapter<String>(
-                this,android.R.layout.simple_spinner_item,Items);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //patientSpinner.setAdapter(adapter);
-        /*patientSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            public void onItemSelected(AdapterView<?> arg0,
-                                       View arg1, int arg2, long arg3)
-            {
-                //set selected patient
-                //modify selected patient on result acquired
-                int index = patientSpinner.getSelectedItemPosition();
-                Toast.makeText(getBaseContext(),
-                        "You have selected item : " + Items[index],
-                        Toast.LENGTH_SHORT).show();
-
-                if (index==0)
-                {
-                    EditText edit = (EditText) findViewById(R.id.spinnerText);
-                    Button add=(Button) findViewById(R.id.add);
-                    edit.setVisibility(View.VISIBLE);
-                    add.setVisibility(View.VISIBLE);
-
-
-                }
-                else
-                {
-                    EditText edit = (EditText) findViewById(R.id.spinnerText);
-                    Button add=(Button) findViewById(R.id.add);
-                    edit.setVisibility(View.GONE);
-                    add.setVisibility(View.GONE);
-                }
-            }
-
-            public void onNothingSelected(AdapterView<?> arg0) {}
-        });*/
 
 
         mbuttonFakeVVS = findViewById(R.id.placeholderButton); //to delete
