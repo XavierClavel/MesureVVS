@@ -94,11 +94,11 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     SharedPreferences mPrefs;
     static SharedPreferences.Editor mEditor;
 
-    public static int patientId;
+    static int patientId;
 
     public static void IncrementPatientId() {
         patientId++;
-        mEditor.putInt("nb_measurements", patientId);
+        mEditor.putInt("patientNumber", patientId);
         mEditor.commit();
     }
 
@@ -106,10 +106,10 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_home);
         instance = this;
+        //XmlManager.EraseHistory();
         XmlManager.ReadHistory();
         mPrefs = getSharedPreferences("label", 0);
         mEditor = mPrefs.edit();
-
         patientId = mPrefs.getInt("patientNumber", 0);
 
         // Récupération des références aux éléments graphiques

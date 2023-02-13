@@ -13,6 +13,7 @@ public class SpinnerHandler {
         patientList = (String[])patientNames.toArray();
     }
 
+
     static void InitializePatientList() {
         patientNames.add("New patient");
     }

@@ -64,6 +64,7 @@ public class PatientDataDisplay extends AppCompatActivity {
             standardDeviationDisplay.setText("-");
         }
 
+        Log.d("comment", patientData.comment);
         commentDisplay.setText(patientData.comment);
     }
 

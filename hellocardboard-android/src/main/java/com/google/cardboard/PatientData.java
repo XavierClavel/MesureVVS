@@ -93,6 +93,18 @@ public class PatientData {
         this.filename = filename;
 
         AddToList();
+        XmlManager.patientFiles.add(this);
+    }
+
+    public String getGenreString() {
+        switch (genre) {
+            case male :
+                return "M";
+
+            case female:
+                return "F";
+        }
+        return "Error";
     }
 
     /**
