@@ -218,7 +218,7 @@ public class XmlManager {
                 Element measure = (Element)items.item(i);
                 //get timestamp
                 String name = measure.getElementsByTagName("name").item(0).getTextContent();
-                String date = measure.getElementsByTagName("date").item(0).getTextContent();
+                //String date = measure.getElementsByTagName("date").item(0).getTextContent();
                 String filename = measure.getElementsByTagName("filename").item(0).getTextContent();
                 genreType genre = genreType.male;
                 int age = 24;
@@ -270,9 +270,9 @@ public class XmlManager {
                 serializer.text(measurementSummary.patientName);
                 serializer.endTag("", "name");
 
-                serializer.startTag("", "date");
-                serializer.text(measurementSummary.measurementDate);
-                serializer.endTag("", "date");
+                //serializer.startTag("", "date");
+                //serializer.text(measurementSummary.measurementDate);
+                //serializer.endTag("", "date");
 
                 serializer.startTag("","filename");
                 serializer.text(measurementSummary.filename);

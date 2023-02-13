@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -90,11 +91,26 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     int modeMesure;
     public static HomeActivity instance;
 
+    SharedPreferences mPrefs;
+    static SharedPreferences.Editor mEditor;
+
+    public static int patientId;
+
+    public static void IncrementPatientId() {
+        patientId++;
+        mEditor.putInt("nb_measurements", patientId);
+        mEditor.commit();
+    }
+
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_home);
         instance = this;
         XmlManager.ReadHistory();
+        mPrefs = getSharedPreferences("label", 0);
+        mEditor = mPrefs.edit();
+
+        patientId = mPrefs.getInt("patientNumber", 0);
 
         // Récupération des références aux éléments graphiques
         mbuttonManette = findViewById(R.id.manette);
@@ -109,6 +125,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         patientSelectPanel = findViewById(R.id.patientSelectionPanel);
         patientList = findViewById(R.id.patientList);
         newPatientButton = findViewById(R.id.patientCreation);
+
 
         newPatientButton.setOnClickListener(new View.OnClickListener() {
             @Override

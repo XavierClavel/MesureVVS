@@ -1,5 +1,6 @@
 package com.google.cardboard;
 
+import android.content.SharedPreferences;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -100,10 +101,13 @@ public class PatientData {
 
     /**
      * Generates a new unique filename for the patient
-     * @return
+     * @return a unique filename
      */
     private String AttributeFileName() {
-        return "filename";
+        String patientId = HomeActivity.patientId+"";
+        String filename = "patient" + patientId;
+        HomeActivity.IncrementPatientId();
+        return filename;
     }
 
     private String GetFileCreationDate() {
