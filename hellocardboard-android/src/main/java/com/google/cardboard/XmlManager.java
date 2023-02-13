@@ -51,7 +51,7 @@ public class XmlManager {
             serializer.endDocument();
             serializer.flush();
             fos.close();
-            Log.d("xml manager", "end of writing operation");
+            //Log.d("xml manager", "end of writing operation");
 
 
         } catch (Exception e) {
@@ -60,6 +60,7 @@ public class XmlManager {
     }
 
     public static void writeData(XmlSerializer serializer, PatientData patientData) {
+        Log.d("xml manager", "starting to write");
         try {
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
             serializer.startTag("", "root");
@@ -153,13 +154,13 @@ public class XmlManager {
             items = dom.getElementsByTagName("age");
             int age = Integer.parseInt(items.item(0).getTextContent());
 
-            items = dom.getElementsByTagName("measurement");
-            Log.d("xml manager", "nb of xml measurements = " + items.getLength());
-
-            patientData = new PatientData(name, genre, age, filename);
+            //items = dom.getElementsByTagName("measurement");
+            //Log.d("xml manager", "nb of xml measurements = " + items.getLength());
 
             items = dom.getElementsByTagName("comment");
             String comment = items.item(0).getTextContent();
+
+            patientData = new PatientData(name, genre, age, filename);
             patientData.SetComment(comment);
 
 

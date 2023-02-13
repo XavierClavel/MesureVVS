@@ -16,7 +16,7 @@ public class PatientData {
     public String patientName;
     public genreType genre;
     public int age;
-    public String comment;
+    public String comment = "No Comment";
 
     public String measurementDate;
     public String filename;
@@ -75,8 +75,6 @@ public class PatientData {
         this.filename = AttributeFileName();
 
         AddToList();
-        this.Save();
-        XmlManager.AddToHistory(this);
     }
 
     /**
@@ -125,6 +123,7 @@ public class PatientData {
 
     public void Save() {
         XmlManager.Write(this);
+        XmlManager.AddToHistory(this);
     }
 
     private void AddToList() {
