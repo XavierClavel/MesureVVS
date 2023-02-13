@@ -2,6 +2,7 @@ package com.google.cardboard;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 public class PatientDataDisplay extends AppCompatActivity {
@@ -12,6 +13,7 @@ public class PatientDataDisplay extends AppCompatActivity {
     TextView meanDisplay;
     TextView varianceDisplay;
     TextView standardDeviationDisplay;
+    TextView commentDisplay;
 
 
     @Override
@@ -26,6 +28,21 @@ public class PatientDataDisplay extends AppCompatActivity {
         meanDisplay = findViewById(R.id.meanDisplay);
         varianceDisplay = findViewById(R.id.varianceDisplay);
         standardDeviationDisplay = findViewById(R.id.standardDeviationDisplay);
+
+        commentDisplay = findViewById(R.id.commentDisplay);
+
+        String patientName = getIntent().getExtras().getString("patient");
+
+        if (patientName != null){
+            Log.d("patient data", patientName);
+            PatientData patientData = PatientData.getPatient(patientName);
+            DisplayPatientData(patientData);
+
+        }
+        else {
+            Log.d("patient data", "no patient");
+        }
+
     }
 
     /**
@@ -37,9 +54,17 @@ public class PatientDataDisplay extends AppCompatActivity {
         genreDisplay.setText(GetGenreString(patientData));
         ageDisplay.setText(patientData.age+"");
 
-        meanDisplay.setText(patientData.mean.toString());
-        varianceDisplay.setText(patientData.variance.toString());
-        standardDeviationDisplay.setText(patientData.standardDeviation.toString());
+        if (patientData.measurement != null) {
+            meanDisplay.setText(patientData.mean.toString());
+            varianceDisplay.setText(patientData.variance.toString());
+            standardDeviationDisplay.setText(patientData.standardDeviation.toString());
+        } else {
+            meanDisplay.setText("-");
+            varianceDisplay.setText("-");
+            standardDeviationDisplay.setText("-");
+        }
+
+        commentDisplay.setText(patientData.comment);
     }
 
     String GetGenreString(PatientData patientData) {

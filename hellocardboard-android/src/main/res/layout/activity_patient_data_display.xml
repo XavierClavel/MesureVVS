@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
-                android:text="Name :" />
+                android:text="Name : " />
 
             <TextView
                 android:id="@+id/nameDisplay"
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
-                android:text="Genre :" />
+                android:text="Genre : " />
 
             <TextView
                 android:id="@+id/genreDisplay"
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
-                android:text="Age :" />
+                android:text="Age : " />
 
             <TextView
                 android:id="@+id/ageDisplay"
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
-                android:text="Mean :" />
+                android:text="Mean : " />
 
             <TextView
                 android:id="@+id/meanDisplay"
@@ -118,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
-                android:text="Variance :" />
+                android:text="Variance : " />
 
             <TextView
                 android:id="@+id/varianceDisplay"
@@ -142,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
-                android:text="Age :" />
+                android:text="Age : " />
 
             <TextView
                 android:id="@+id/standardDeviationDisplay"
@@ -153,6 +153,23 @@
                 android:text="TextView" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/commentText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="0dp"
+            android:text="Comment : " />
+
+        <TextView
+            android:id="@+id/commentDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="192dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="0dp"
+            android:inputType="textMultiLine"
+            android:text="TextView" />
 
     </LinearLayout>
 

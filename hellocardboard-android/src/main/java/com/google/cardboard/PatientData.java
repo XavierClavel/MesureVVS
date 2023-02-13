@@ -1,14 +1,10 @@
 package com.google.cardboard;
 
-import android.content.SharedPreferences;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import org.w3c.dom.Attr;
-
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 

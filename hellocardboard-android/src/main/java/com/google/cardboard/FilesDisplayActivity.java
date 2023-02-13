@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,7 +35,7 @@ public class FilesDisplayActivity extends AppCompatActivity {
         }
     }
 
-    void createLayout(PatientData measurementSummary) {
+    void createLayout(PatientData patientData) {
 
         LinearLayout.LayoutParams textParam = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -47,8 +49,8 @@ public class FilesDisplayActivity extends AppCompatActivity {
                 8f
         );
 
-        String date = measurementSummary.measurementDate;
-        String name = measurementSummary.patientName;
+        String date = patientData.measurementDate;
+        String name = patientData.patientName;
 
         RelativeLayout layout = new RelativeLayout(FilesDisplayActivity.this);
         layout.setPadding(20, 20, 20, 20);
@@ -73,6 +75,18 @@ public class FilesDisplayActivity extends AppCompatActivity {
         localLinLayout.addView(placeDisplay);
 
         layout1.addView(localLinLayout);
+
+        Button button = new Button(this);
+        button.setText("Display");
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getBaseContext(), PatientDataDisplay.class);
+                intent.putExtra("patient", patientData.patientName);
+                startActivity(intent);
+            }
+        });
+        layout.addView(button);
 
         mainLayout.addView(layout);
 
