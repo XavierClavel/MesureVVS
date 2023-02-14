@@ -22,15 +22,27 @@ public class PatientCreationActivity extends AppCompatActivity {
 
     genreType genre;
 
+    String patientFile = null;
+
     //TODO : prevent user from validating incomplete profile
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_creation);
 
+        if (getIntent().hasExtra("patient")) patientFile = getIntent().getExtras().getString("patient");
+
         textName = findViewById(R.id.patientCreation_name);
         textAge = findViewById(R.id.patientCreation_age);
         textComment = findViewById(R.id.patientCreation_comment);
+
+        if (patientFile != null) {
+            PatientData patientData = PatientData.getPatient(patientFile);
+            textName.setText(patientData.patientName);
+            textAge.setText(patientData.age+"");
+            textComment.setText(patientData.comment);
+        }
+
         radioGroup = findViewById(R.id.genreGroup);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -53,13 +65,26 @@ public class PatientCreationActivity extends AppCompatActivity {
                 int age = Integer.parseInt(textAge.getText().toString());
                 String comment = textComment.getText().toString();
 
-                PatientData patientData = new PatientData(patientName, genre, age);
-                patientData.SetComment(comment);
-                Log.d("commentaire", comment);
+                Intent intent;
 
-                patientData.Save();
+                PatientData patientData;
+                if (patientFile == null) {
+                    patientData = new PatientData(patientName, genre, age);
+                    patientData.SetComment(comment);
+                    patientData.Save();
+                    intent = new Intent((Context) getBaseContext(), HomeActivity.class);
+                }
+                else {
+                    patientData = PatientData.getPatient(patientFile);
+                    patientData.patientName = patientName;
+                    patientData.age = age;
+                    patientData.genre = genre;
+                    patientData.SetComment(comment);
+                    patientData.Update();
+                    intent = new Intent((Context) getBaseContext(), FilesDisplayActivity.class);
+                }
 
-                Intent intent = new Intent((Context) getBaseContext(), HomeActivity.class);
+
                 startActivity(intent);
             }
         });
@@ -68,11 +93,9 @@ public class PatientCreationActivity extends AppCompatActivity {
     }
 
     void ParseString(String genreString) {
-        switch (genreString) {
-            case "M":
-                genre = genreType.male;
-            case "F" :
-                genre = genreType.female;
-        }
+        Log.d("string parsed",genreString);
+        if (genreString.equals("M")) genre = genreType.male;
+        else if (genreString.equals("F")) genre = genreType.female;
+        Log.d("genre enum", genre.name());
     }
 }

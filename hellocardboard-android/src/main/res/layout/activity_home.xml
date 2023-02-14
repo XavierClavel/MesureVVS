@@ -119,21 +119,40 @@
         android:gravity="center"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
-        android:text="Temp"
+        android:text="Patient Selection"
         android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/placeholderButton"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/placeholderText"
-        android:text="Fake VVS" />
+        android:orientation="horizontal"
+        android:id="@+id/selectLayout">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="No patient selected"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:id="@+id/patientId"
+            />
+
+        <Button
+            android:id="@+id/placeholderButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/placeholderText"
+            android:layout_weight="1"
+            android:text="select  patient" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvfichepatient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/placeholderButton"
+        android:layout_below="@id/selectLayout"
         android:gravity="center"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"

@@ -4,7 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="10dp"
     tools:context=".PatientDataDisplay">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +29,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
-                android:text="Name : " />
+                android:text="Name : "
+                android:textStyle="bold"
+                android:textSize="16dp"
+                />
 
             <TextView
                 android:id="@+id/nameDisplay"
@@ -46,6 +55,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
+                android:textStyle="bold"
+                android:textSize="16dp"
                 android:text="Genre : " />
 
             <TextView
@@ -70,6 +81,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
+                android:textStyle="bold"
+                android:textSize="16dp"
                 android:text="Age : " />
 
             <TextView
@@ -81,6 +94,34 @@
                 android:text="TextView" />
 
         </LinearLayout>
+
+
+
+        <TextView
+            android:id="@+id/commentText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="0dp"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            android:text="Comment : " />
+
+        <TextView
+            android:id="@+id/commentDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="0dp"
+            android:inputType="textMultiLine"
+            android:text="TextView" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="10px"
+            android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/meanLayout"
@@ -94,6 +135,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
+                android:textStyle="bold"
+                android:textSize="16dp"
                 android:text="Mean : " />
 
             <TextView
@@ -118,6 +161,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
+                android:textStyle="bold"
+                android:textSize="16dp"
                 android:text="Variance : " />
 
             <TextView
@@ -142,6 +187,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:layout_marginEnd="0dp"
+                android:textStyle="bold"
+                android:textSize="16dp"
                 android:text="Standard Deviation : " />
 
             <TextView
@@ -154,23 +201,66 @@
 
         </LinearLayout>
 
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="10px"
+            android:background="?android:attr/listDivider" />
+
         <TextView
-            android:id="@+id/commentText"
+            android:id="@+id/measurementsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
             android:layout_marginEnd="0dp"
-            android:text="Comment : " />
+            android:textStyle="bold"
+            android:textSize="16dp"
+            android:text="Measurements : " />
 
-        <TextView
-            android:id="@+id/commentDisplay"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="192dp"
-            android:layout_marginBottom="0dp"
-            android:layout_marginEnd="0dp"
-            android:inputType="textMultiLine"
-            android:text="TextView" />
+            android:layout_height="wrap_content"
+            android:id="@+id/measurementsDisplay"
+            >
+
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="10px"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonEditFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:text="Edit" />
+
+            <Button
+                android:id="@+id/buttonDeleteFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:text="Delete" />
+        </LinearLayout>
+
 
     </LinearLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

@@ -61,6 +61,7 @@ public class XmlManager {
 
     public static void writeData(XmlSerializer serializer, PatientData patientData) {
         Log.d("xml manager", "starting to write");
+        Log.d("patient genre written",patientData.genre.name());
         try {
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
             serializer.startTag("", "root");
@@ -70,7 +71,7 @@ public class XmlManager {
                 serializer.endTag("", "name");
 
                 serializer.startTag("", "genre");
-                serializer.text(patientData.genre.toString());
+                serializer.text(patientData.genre.name());
                 serializer.endTag("", "genre");
 
                 serializer.startTag("", "age");

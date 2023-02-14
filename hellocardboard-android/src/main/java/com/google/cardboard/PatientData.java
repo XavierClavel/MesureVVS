@@ -126,17 +126,22 @@ public class PatientData {
         XmlManager.AddToHistory(this);
     }
 
+    public void Update() {
+        XmlManager.Write(this);
+    }
+
     private void AddToList() {
         RadioGroup  patientList = HomeActivity.instance.findViewById(R.id.patientList);
         RadioButton patientButton = new RadioButton(HomeActivity.instance);
         patientButton.setText(patientName);
         patientList.addView(patientButton);
 
-        dictionaryNameToPatient.put(patientName, this);
+        dictionaryNameToPatient.put(filename, this);
     }
 
-    public static PatientData getPatient(String name) {
-        return dictionaryNameToPatient.get(name);
+    public static PatientData getPatient(String filename) {
+        if (dictionaryNameToPatient.containsKey(filename)) return dictionaryNameToPatient.get(filename);
+        return null;
     }
 
 }

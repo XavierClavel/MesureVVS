@@ -87,6 +87,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     RelativeLayout patientSelectPanel;
     RadioGroup patientList;
     Button newPatientButton;
+    TextView patientNameDisplay;
 
     int modeMesure;
     public static HomeActivity instance;
@@ -125,6 +126,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         patientSelectPanel = findViewById(R.id.patientSelectionPanel);
         patientList = findViewById(R.id.patientList);
         newPatientButton = findViewById(R.id.patientCreation);
+        patientNameDisplay = findViewById(R.id.patientId);
 
 
         newPatientButton.setOnClickListener(new View.OnClickListener() {
@@ -145,7 +147,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 // If the radiobutton that has changed in check state is now checked...
                 if (isChecked) {
                     patientName = radioButton.getText().toString();
-                    mEditTextNom.setText(patientName);
+                    patientNameDisplay.setText(patientName);
                     selectedPatient = PatientData.getPatient(patientName);
                 }
             }
@@ -171,7 +173,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
 
         mtextMesures.setText(String.valueOf(mseekMesures.getProgress()));
         mbuttonEcran.setEnabled(false);
-        mbuttonOuvrir.setEnabled(false);
+        //mbuttonOuvrir.setEnabled(false);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 

@@ -1,8 +1,12 @@
 package com.google.cardboard;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class PatientDataDisplay extends AppCompatActivity {
@@ -14,6 +18,10 @@ public class PatientDataDisplay extends AppCompatActivity {
     TextView varianceDisplay;
     TextView standardDeviationDisplay;
     TextView commentDisplay;
+
+    Button editButton;
+
+    String patientFile = null;
 
 
     @Override
@@ -31,11 +39,21 @@ public class PatientDataDisplay extends AppCompatActivity {
 
         commentDisplay = findViewById(R.id.commentDisplay);
 
-        String patientName = getIntent().getExtras().getString("patient");
+        editButton = findViewById(R.id.buttonEditFile);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getBaseContext(), PatientCreationActivity.class);
+                intent.putExtra("patient", patientFile);
+                startActivity(intent);
+            }
+        });
 
-        if (patientName != null){
-            Log.d("patient data", patientName);
-            PatientData patientData = PatientData.getPatient(patientName);
+        patientFile = getIntent().getExtras().getString("patient");
+
+        if (patientFile != null){
+            Log.d("patient data", patientFile);
+            PatientData patientData = PatientData.getPatient(patientFile);
             DisplayPatientData(patientData);
 
         }
