@@ -20,6 +20,7 @@ public class PatientDataDisplay extends AppCompatActivity {
     TextView commentDisplay;
 
     Button editButton;
+    Button deleteButton;
 
     String patientFile = null;
 
@@ -45,6 +46,17 @@ public class PatientDataDisplay extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getBaseContext(), PatientCreationActivity.class);
                 intent.putExtra("patient", patientFile);
+                startActivity(intent);
+            }
+        });
+
+        deleteButton = findViewById(R.id.buttonDeleteFile);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PatientData.getPatient(patientFile).Delete();
+                Intent intent = new Intent(getBaseContext(), FilesDisplayActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         });

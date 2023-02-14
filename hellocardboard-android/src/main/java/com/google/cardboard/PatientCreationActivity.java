@@ -19,6 +19,8 @@ public class PatientCreationActivity extends AppCompatActivity {
     EditText textAge;
     EditText textComment;
     RadioGroup radioGroup;
+    RadioButton button0;
+    RadioButton button1;
 
     genreType genre;
 
@@ -36,14 +38,21 @@ public class PatientCreationActivity extends AppCompatActivity {
         textAge = findViewById(R.id.patientCreation_age);
         textComment = findViewById(R.id.patientCreation_comment);
 
+        radioGroup = findViewById(R.id.genreGroup);
+        button0 = findViewById(R.id.radioButton0);
+        button1 = findViewById(R.id.radioButton1);
+
         if (patientFile != null) {
             PatientData patientData = PatientData.getPatient(patientFile);
             textName.setText(patientData.patientName);
             textAge.setText(patientData.age+"");
             textComment.setText(patientData.comment);
+            RadioButton genreButton = GenreToButton(patientData.genre);
+            genreButton.setChecked(true);
+
         }
 
-        radioGroup = findViewById(R.id.genreGroup);
+
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -97,5 +106,16 @@ public class PatientCreationActivity extends AppCompatActivity {
         if (genreString.equals("M")) genre = genreType.male;
         else if (genreString.equals("F")) genre = genreType.female;
         Log.d("genre enum", genre.name());
+    }
+
+    RadioButton GenreToButton(genreType genre) {
+        switch (genre) {
+            case male:
+                return button0;
+
+            case female:
+                return button1;
+        }
+        return null;
     }
 }

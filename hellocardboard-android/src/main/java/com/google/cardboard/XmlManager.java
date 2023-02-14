@@ -184,6 +184,23 @@ public class XmlManager {
         WriteHistory();
     }
 
+    public static void RemoveFromHistory(PatientData patientData) {
+        patientFiles.remove(patientData);
+        WriteHistory();
+    }
+
+    public static void Delete(PatientData patientData) {
+        Log.d("xml manager", "starting to erase data");
+        try {
+            File dir = HomeActivity.instance.getFilesDir();
+            File file = new File(dir, patientData.filename);
+            boolean deleted = file.delete();
+            Log.d("deleted", "" + deleted);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void EraseHistory() {
         try {
             File dir = HomeActivity.instance.getFilesDir();

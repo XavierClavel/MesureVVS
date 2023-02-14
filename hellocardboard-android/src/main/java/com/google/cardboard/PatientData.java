@@ -1,5 +1,6 @@
 package com.google.cardboard;
 
+import android.util.Xml;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -128,6 +129,11 @@ public class PatientData {
 
     public void Update() {
         XmlManager.Write(this);
+    }
+
+    public void Delete() {
+        XmlManager.RemoveFromHistory(this);
+        XmlManager.Delete(this);
     }
 
     private void AddToList() {
