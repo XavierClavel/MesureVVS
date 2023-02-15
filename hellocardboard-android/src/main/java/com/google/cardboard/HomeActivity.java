@@ -187,7 +187,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public void onClick(View view) {
                 String alertMessage;
-                 String currentScore = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_SCORE, "Réaliser une mesure pour afficher le résultat");
+                String currentScore = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_SCORE, "Réaliser une mesure pour afficher le résultat");
                 String currentName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_NAME, "Test");
                 if (!currentName.equals(mEditTextNom.getText().toString())) {
                     alertMessage = "Réaliser une mesure pour afficher le résultat";

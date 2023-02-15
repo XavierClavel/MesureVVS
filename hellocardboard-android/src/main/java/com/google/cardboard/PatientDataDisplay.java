@@ -2,6 +2,8 @@ package com.google.cardboard;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,11 +26,15 @@ public class PatientDataDisplay extends AppCompatActivity {
 
     String patientFile = null;
 
+    AlertDialog alertDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_data_display);
+
+        alertDialog = CreateAlertMessage();
 
         nameDisplay = findViewById(R.id.nameDisplay);
         genreDisplay = findViewById(R.id.genreDisplay);
@@ -54,10 +60,7 @@ public class PatientDataDisplay extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PatientData.getPatient(patientFile).Delete();
-                Intent intent = new Intent(getBaseContext(), FilesDisplayActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                alertDialog.show();
             }
         });
 
@@ -73,6 +76,32 @@ public class PatientDataDisplay extends AppCompatActivity {
             Log.d("patient data", "no patient");
         }
 
+    }
+
+    AlertDialog CreateAlertMessage() {
+        AlertDialog.Builder builder =  new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete this patient file ? This operation is irreversible")
+            //.setCancelable(true)
+            .setPositiveButton("Delete file", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // Delete patient file
+                    DeleteFile();
+                }
+            })
+            .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // User cancelled the dialog
+                }
+            });
+        Log.d("dialog", "created");
+        return builder.create();
+    }
+
+    void DeleteFile() {
+        PatientData.getPatient(patientFile).Delete();
+        Intent intent = new Intent(getBaseContext(), FilesDisplayActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     /**
