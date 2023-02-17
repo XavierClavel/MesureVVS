@@ -9,6 +9,42 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <TextView
+        android:id="@+id/placeholderText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="Sélection du patient"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/placeholderText"
+        android:orientation="horizontal"
+        android:id="@+id/selectLayout">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="No patient selected"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:id="@+id/patientId"
+            />
+
+        <Button
+            android:id="@+id/placeholderButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/placeholderText"
+            android:layout_weight="1"
+            android:text="sélectionner" />
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/manette"
         android:layout_width="fill_parent"
@@ -20,20 +56,14 @@
         android:id="@+id/ecran"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btn_ecran"
-        android:layout_below="@id/manette" />
-
-    <EditText
-        android:id="@+id/editT_nomPatient"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Nom Patient" />
+        android:layout_below="@id/manette"
+        android:text="@string/btn_ecran" />
 
     <TextView
         android:id="@+id/tvParametres"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editT_nomPatient"
+        android:layout_below="@id/selectLayout"
         android:gravity="center"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
@@ -111,52 +141,16 @@
 
     </LinearLayout>
 
+
     <TextView
-        android:id="@+id/placeholderText"
+        android:id="@+id/tvfichepatient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/ecran"
         android:gravity="center"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
-        android:text="Patient Selection"
-        android:textSize="20sp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/placeholderText"
-        android:orientation="horizontal"
-        android:id="@+id/selectLayout">
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="No patient selected"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:id="@+id/patientId"
-            />
-
-        <Button
-            android:id="@+id/placeholderButton"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/placeholderText"
-            android:layout_weight="1"
-            android:text="select  patient" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvfichepatient"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/selectLayout"
-        android:gravity="center"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="Fiche patient"
+        android:text="Fiches patient"
         android:textSize="20sp" />
     <!--android:layout_below="@id/ecran"-->
 
@@ -166,6 +160,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tvfichepatient"
         android:text="Ouvrir" />
+
+    <Button
+        android:id="@+id/deleteEverything"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/openusrdata"
+        android:text="Supprimer tout" />
 
     <RelativeLayout
         android:id="@+id/patientSelectionPanel"

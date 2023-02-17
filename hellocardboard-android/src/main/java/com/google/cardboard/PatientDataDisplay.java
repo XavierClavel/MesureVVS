@@ -5,24 +5,30 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class PatientDataDisplay extends AppCompatActivity {
     TextView nameDisplay;
+    TextView firstNameDisplay;
     TextView genreDisplay;
     TextView ageDisplay;
-
-    TextView meanDisplay;
-    TextView varianceDisplay;
-    TextView standardDeviationDisplay;
     TextView commentDisplay;
 
     Button editButton;
     Button deleteButton;
+
+    LinearLayout layoutVVS_simple;
+    LinearLayout layoutVVS_dynamique;
 
     String patientFile = null;
 
@@ -37,14 +43,15 @@ public class PatientDataDisplay extends AppCompatActivity {
         alertDialog = CreateAlertMessage();
 
         nameDisplay = findViewById(R.id.nameDisplay);
+        firstNameDisplay = findViewById(R.id.firstNameDisplay);
         genreDisplay = findViewById(R.id.genreDisplay);
         ageDisplay = findViewById(R.id.ageDisplay);
 
-        meanDisplay = findViewById(R.id.meanDisplay);
-        varianceDisplay = findViewById(R.id.varianceDisplay);
-        standardDeviationDisplay = findViewById(R.id.standardDeviationDisplay);
 
         commentDisplay = findViewById(R.id.commentDisplay);
+
+        layoutVVS_simple = findViewById(R.id.layoutVVS_simple);
+        layoutVVS_dynamique = findViewById(R.id.layoutVVS_dynamique);
 
         editButton = findViewById(R.id.buttonEditFile);
         editButton.setOnClickListener(new View.OnClickListener() {
@@ -109,22 +116,87 @@ public class PatientDataDisplay extends AppCompatActivity {
      * @param patientData The patient info
      */
     void DisplayPatientData(PatientData patientData) {
-        nameDisplay.setText(patientData.patientName);
+        nameDisplay.setText(patientData.lastName);
+        firstNameDisplay.setText(patientData.firstName);
         genreDisplay.setText(GetGenreString(patientData));
-        ageDisplay.setText(patientData.age+"");
 
-        if (patientData.measurement != null) {
-            meanDisplay.setText(patientData.mean.toString());
-            varianceDisplay.setText(patientData.variance.toString());
-            standardDeviationDisplay.setText(patientData.standardDeviation.toString());
-        } else {
-            meanDisplay.setText("-");
-            varianceDisplay.setText("-");
-            standardDeviationDisplay.setText("-");
-        }
+        ageDisplay.setText(patientData.age+"");
 
         Log.d("comment", patientData.comment);
         commentDisplay.setText(patientData.comment);
+
+        DisplayMeasurementsSeries(true, "Série 1", FakeVVS(5));
+        DisplayMeasurementsSeries(false, "Série 2", FakeVVS(5));
+
+    }
+
+    ArrayList<Float> FakeVVS(int nbMeasurements) {
+        ArrayList<Float> mScore = new ArrayList<>();
+        float min = -5f;
+        float max = 5f;
+        Random r = new Random();
+
+        for (int i = 0; i < nbMeasurements; i++) {
+            mScore.add(min + r.nextFloat() * (max - min));
+        }
+        return mScore;
+    }
+
+    float CalculateMean(ArrayList<Float> measurement) {
+        float mean = 0f;
+        for (Float value : measurement) {
+            mean += value;
+        }
+        mean /= measurement.size();
+        return mean;
+    }
+
+    float CalculateVariance(float mean, ArrayList<Float> measurement) {
+        float variance = 0f;
+        for (Float value : measurement) {
+            variance +=  Math.pow(value-mean,2);
+        }
+        variance /= measurement.size();
+        return variance;
+    }
+
+    float CalculateStandardDeviation(float variance) {
+        return (float) Math.pow(variance,0.5f);
+    }
+
+    void DisplayMeasurementsSeries(boolean isSimpleVVS,String name, ArrayList<Float> values) {
+        Log.d("measurements", "displaying");
+        LinearLayout measurementsDisplay = isSimpleVVS ? layoutVVS_simple : layoutVVS_dynamique;
+        TextView nameDisplay = new TextView(this);
+        nameDisplay.setText(name);
+        nameDisplay.setTypeface(null, Typeface.BOLD);
+        measurementsDisplay.addView(nameDisplay);
+
+        TextView valueDisplay;
+
+        for (float value : values) {
+            valueDisplay = new TextView(this);
+            //TODO : régler le nombres de décimales
+            valueDisplay.setText(value+"");
+            measurementsDisplay.addView(valueDisplay);
+        }
+
+        float mean = CalculateMean(values);
+        float variance = CalculateVariance(mean, values);
+        float standardDeviation = CalculateStandardDeviation(variance);
+
+        valueDisplay = new TextView(this);
+        valueDisplay.setText("Moyenne : " + mean);
+        measurementsDisplay.addView(valueDisplay);
+
+        valueDisplay = new TextView(this);
+        valueDisplay.setText("Variance : " + variance);
+        measurementsDisplay.addView(valueDisplay);
+
+        valueDisplay = new TextView(this);
+        valueDisplay.setText("Ecart-type : " + standardDeviation);
+        measurementsDisplay.addView(valueDisplay);
+
     }
 
     String GetGenreString(PatientData patientData) {

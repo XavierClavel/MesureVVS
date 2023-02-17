@@ -80,7 +80,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     SeekBar mseekMesures;
     ToggleButton mtoggleSimple;
     ToggleButton mtoggleDynamique;
-    EditText mEditTextNom;
     TextView mtextMesures;
     //Button mbuttonTutoriel;
     Button mbuttonFakeVVS;
@@ -107,8 +106,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_home);
         instance = this;
-        //XmlManager.EraseHistory();
-        XmlManager.ReadHistory();
+        XmlManager.ReadIndex();
         mPrefs = getSharedPreferences("label", 0);
         mEditor = mPrefs.edit();
         patientId = mPrefs.getInt("patientNumber", 0);
@@ -118,7 +116,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         //mbuttonTutoriel = findViewById(R.id.tutoriel);
         mbuttonEcran = findViewById(R.id.ecran);
         mbuttonOuvrir = findViewById(R.id.openusrdata);
-        mEditTextNom = findViewById(R.id.editT_nomPatient);
         mseekMesures = findViewById(R.id.sbNbMesures);
         mtextMesures = findViewById(R.id.tvNbMesures);
         mtoggleSimple = findViewById(R.id.tbSimple);
@@ -127,6 +124,13 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         patientList = findViewById(R.id.patientList);
         newPatientButton = findViewById(R.id.patientCreation);
         patientNameDisplay = findViewById(R.id.patientId);
+
+        findViewById(R.id.deleteEverything).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                XmlManager.EraseIndex();
+            }
+        });
 
 
         newPatientButton.setOnClickListener(new View.OnClickListener() {
@@ -187,6 +191,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public void onClick(View view) {
                 String alertMessage;
+                /*
                 String currentScore = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_SCORE, "Réaliser une mesure pour afficher le résultat");
                 String currentName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_NAME, "Test");
                 if (!currentName.equals(mEditTextNom.getText().toString())) {
@@ -205,12 +210,15 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 //XmlManager.Write("testFile", arrayScore);
                 //XmlManager.Read("testFile");
                 //XmlManager.patientFiles.add(new PatientData(currentName, ,"file"));
-                XmlManager.WriteHistory();
+
+                 */
+                //XmlManager.WriteHistory();
                 Intent intent = new Intent(getBaseContext(),FilesDisplayActivity.class);
                 startActivity(intent);
             }
         });
 
+        /*
         // Nom du patient, nécessaire pour activer les boutons Ecran et Ouvrir
         mEditTextNom.addTextChangedListener(new TextWatcher() {
             @Override
@@ -228,7 +236,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 mbuttonEcran.setEnabled(!editable.toString().isEmpty());
                 mbuttonOuvrir.setEnabled(!editable.toString().isEmpty());
             }
-        });
+        });*/
 
         // Nombre de mesures, déterminé par le slider
         mseekMesures.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -287,7 +295,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         public void onClick(View view) {
             getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
                     .edit()
-                    .putString(SHARED_PREF_USER_INFO_NAME, mEditTextNom.getText().toString())
+                    .putString(SHARED_PREF_USER_INFO_NAME, selectedPatient.filename)
                     .apply();
             startActivity(new Intent(HomeActivity.this, ConnecteEcran.class));
         }
@@ -311,7 +319,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         public void onClick(View view) {
             getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
                     .edit()
-                    .putString(SHARED_PREF_USER_INFO_NAME, mEditTextNom.getText().toString())
+                    .putString(SHARED_PREF_USER_INFO_NAME, selectedPatient.filename)
                     .apply();
             Intent intentEcran = new Intent((Context) getBaseContext(), VrActivity.class);
             intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));

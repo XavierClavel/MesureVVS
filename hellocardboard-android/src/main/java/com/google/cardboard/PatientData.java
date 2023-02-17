@@ -1,25 +1,26 @@
 package com.google.cardboard;
 
-import android.util.Xml;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.annotation.RequiresPermission;
-
 enum genreType {male, female}
 
-public class PatientData {
-    public String patientName;
-    public genreType genre;
-    public int age;
-    public String comment = "No Comment";
 
-    public String measurementDate;
+//TODO : update list when updating patient file
+public class PatientData {
+    public String lastName;
+    public String firstName;
+    public genreType genre;
+    public int birthYear;
+    public String comment = "No Comment";
+    public int age;
+
     public String filename;
     public List<Float> measurement;
 
@@ -49,6 +50,12 @@ public class PatientData {
 
 
 
+    private void CalculateAge() {
+        this.age = Calendar.getInstance().get(Calendar.YEAR) - this.birthYear;
+    }
+
+
+
     public void AddMeasurement(List<Float> measurement) {
         this.measurement = measurement;
         Calculate();
@@ -63,34 +70,38 @@ public class PatientData {
 
     /**
      * Add new client to database and generate a new file
-     * @param patientName
+     * @param lastName
      * @param genre
-     * @param age
+     * @param birthYear
      */
-    public PatientData(String patientName, genreType genre, int age) {
-        this.patientName = patientName;
+    public PatientData(String lastName, String firstName,genreType genre, int birthYear) {
+        this.lastName = lastName;
+        this.firstName = firstName;
         this.genre = genre;
-        this.age = age;
+        this.birthYear = birthYear;
 
-        this.measurementDate = GetFileCreationDate();
+        //this.measurementDate = GetFileCreationDate();
         this.filename = AttributeFileName();
 
+        CalculateAge();
         AddToList();
     }
 
     /**
      * Get reference to an already existing patient data
-     * @param patientName
+     * @param lastName
      * @param genre
-     * @param age
+     * @param birthYear
      * @param filename
      */
-    public PatientData(String patientName, genreType genre, int age, String filename) {
-        this.patientName = patientName;
+    public PatientData(String lastName, String firstName,genreType genre, int birthYear, String filename) {
+        this.lastName = lastName;
+        this.firstName = firstName;
         this.genre = genre;
-        this.age = age;
+        this.birthYear = birthYear;
         this.filename = filename;
 
+        CalculateAge();
         AddToList();
         XmlManager.patientFiles.add(this);
     }
@@ -124,7 +135,7 @@ public class PatientData {
 
     public void Save() {
         XmlManager.Write(this);
-        XmlManager.AddToHistory(this);
+        XmlManager.AddToIndex(this);
     }
 
     public void Update() {
@@ -132,14 +143,14 @@ public class PatientData {
     }
 
     public void Delete() {
-        XmlManager.RemoveFromHistory(this);
+        XmlManager.RemoveFromIndex(this);
         XmlManager.Delete(this);
     }
 
     private void AddToList() {
         RadioGroup  patientList = HomeActivity.instance.findViewById(R.id.patientList);
         RadioButton patientButton = new RadioButton(HomeActivity.instance);
-        patientButton.setText(patientName);
+        patientButton.setText(lastName);
         patientList.addView(patientButton);
 
         dictionaryNameToPatient.put(filename, this);

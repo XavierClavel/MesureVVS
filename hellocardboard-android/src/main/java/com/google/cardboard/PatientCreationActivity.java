@@ -15,8 +15,9 @@ import android.widget.RadioGroup;
 public class PatientCreationActivity extends AppCompatActivity {
 
     Button validateButton;
-    EditText textName;
-    EditText textAge;
+    EditText textLastName;
+    EditText textFirstName;
+    EditText textBirthYear;
     EditText textComment;
     RadioGroup radioGroup;
     RadioButton button0;
@@ -31,11 +32,13 @@ public class PatientCreationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_creation);
+        genre = null;
 
         if (getIntent().hasExtra("patient")) patientFile = getIntent().getExtras().getString("patient");
 
-        textName = findViewById(R.id.patientCreation_name);
-        textAge = findViewById(R.id.patientCreation_age);
+        textLastName = findViewById(R.id.patientCreation_lastName);
+        textFirstName = findViewById(R.id.patientCreation_firstName);
+        textBirthYear = findViewById(R.id.patientCreation_age);
         textComment = findViewById(R.id.patientCreation_comment);
 
         radioGroup = findViewById(R.id.genreGroup);
@@ -44,8 +47,9 @@ public class PatientCreationActivity extends AppCompatActivity {
 
         if (patientFile != null) {
             PatientData patientData = PatientData.getPatient(patientFile);
-            textName.setText(patientData.patientName);
-            textAge.setText(patientData.age+"");
+            textLastName.setText(patientData.lastName);
+            textFirstName.setText(patientData.firstName);
+            textBirthYear.setText(patientData.birthYear+"");
             textComment.setText(patientData.comment);
             RadioButton genreButton = GenreToButton(patientData.genre);
             genreButton.setChecked(true);
@@ -70,30 +74,34 @@ public class PatientCreationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                String patientName = textName.getText().toString();
-                int age = Integer.parseInt(textAge.getText().toString());
+                String lastName = textLastName.getText().toString();
+                String firstName = textFirstName.getText().toString();
+                int birthYear = Integer.parseInt(textBirthYear.getText().toString());
                 String comment = textComment.getText().toString();
 
                 Intent intent;
 
                 PatientData patientData;
                 if (patientFile == null) {
-                    patientData = new PatientData(patientName, genre, age);
+                    Log.d("patient file", "is null");
+                    patientData = new PatientData(lastName, firstName,genre, birthYear);
                     patientData.SetComment(comment);
                     patientData.Save();
                     intent = new Intent((Context) getBaseContext(), HomeActivity.class);
                 }
                 else {
+                    Log.d("patient file", "is not null");
                     patientData = PatientData.getPatient(patientFile);
-                    patientData.patientName = patientName;
-                    patientData.age = age;
-                    patientData.genre = genre;
+                    patientData.lastName = lastName;
+                    patientData.firstName = firstName;
+                    patientData.birthYear = birthYear;
+                    if (genre != null) patientData.genre = genre;
                     patientData.SetComment(comment);
                     patientData.Update();
                     intent = new Intent((Context) getBaseContext(), FilesDisplayActivity.class);
                 }
 
-
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         });

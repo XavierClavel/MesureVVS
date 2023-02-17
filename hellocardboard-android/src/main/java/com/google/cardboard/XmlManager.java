@@ -19,8 +19,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -36,7 +34,6 @@ public class XmlManager {
 
 
     public static void Write(PatientData patientData) {
-        dataMemory = patientData.measurement;
         Log.d("xml manager", "starting to write data");
         try {
             File dir = HomeActivity.instance.getFilesDir();
@@ -61,26 +58,54 @@ public class XmlManager {
 
     public static void writeData(XmlSerializer serializer, PatientData patientData) {
         Log.d("xml manager", "starting to write");
-        Log.d("patient genre written",patientData.genre.name());
+        Log.d("last name", patientData.lastName);
+        Log.d("first name null ?", patientData.firstName);
+        Log.d("birth year", patientData.birthYear + "");
+        Log.d("genre", patientData.genre.name());
+
         try {
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
             serializer.startTag("", "root");
+            try {
 
-                serializer.startTag("", "name");
-                serializer.text(patientData.patientName);
-                serializer.endTag("", "name");
 
+                serializer.startTag("", "lastName");
+                serializer.text(patientData.lastName);
+                serializer.endTag("", "lastName");
+            } catch (Exception e) {
+                Log.d("failure", "lastname");
+            }
+            try {
+
+
+                serializer.startTag("", "firstName");
+                serializer.text(patientData.firstName);
+                serializer.endTag("", "firstName");
+            } catch (Exception e) {
+                Log.d("failure", "firstname");
+            }
+             try {
                 serializer.startTag("", "genre");
                 serializer.text(patientData.genre.name());
                 serializer.endTag("", "genre");
+             } catch (Exception e) {
+                 Log.d("failure", "genre");
+             }
 
-                serializer.startTag("", "age");
-                serializer.text(patientData.age + "");
-                serializer.endTag("", "age");
-
+             try {
+                serializer.startTag("", "birthYear");
+                serializer.text(patientData.birthYear + "");
+                serializer.endTag("", "birthYear");
+             } catch (Exception e) {
+                 Log.d("failure", "birthyear");
+             }
+ try {
                 serializer.startTag("","comment");
                 serializer.text(patientData.comment);
                 serializer.endTag("", "comment");
+ } catch (Exception e) {
+     Log.d("failure", "commente");
+ }
 
                 /*serializer.startTag("", "measurement");
                 serializer.text(measurementValue + "");
@@ -146,13 +171,16 @@ public class XmlManager {
             dom = db.parse(is);
             dom.getDocumentElement().normalize();
             //get all measurement tags
-            items = dom.getElementsByTagName("name");
-            String name = items.item(0).getTextContent();
+            items = dom.getElementsByTagName("lastName");
+            String lastName = items.item(0).getTextContent();
+
+            items = dom.getElementsByTagName("firstName");
+            String firstName = items.item(0).getTextContent();
 
             items = dom.getElementsByTagName("genre");
             genreType genre = genreType.valueOf(items.item(0).getTextContent());
 
-            items = dom.getElementsByTagName("age");
+            items = dom.getElementsByTagName("birthYear");
             int age = Integer.parseInt(items.item(0).getTextContent());
 
             //items = dom.getElementsByTagName("measurement");
@@ -161,7 +189,7 @@ public class XmlManager {
             items = dom.getElementsByTagName("comment");
             String comment = items.item(0).getTextContent();
 
-            patientData = new PatientData(name, genre, age, filename);
+            patientData = new PatientData(lastName,firstName, genre, age, filename);
             patientData.SetComment(comment);
 
 
@@ -179,12 +207,12 @@ public class XmlManager {
 
     }
 
-    public static void AddToHistory(PatientData patientData) {
+    public static void AddToIndex(PatientData patientData) {
         patientFiles.add(patientData);
         WriteHistory();
     }
 
-    public static void RemoveFromHistory(PatientData patientData) {
+    public static void RemoveFromIndex(PatientData patientData) {
         patientFiles.remove(patientData);
         WriteHistory();
     }
@@ -201,7 +229,7 @@ public class XmlManager {
         }
     }
 
-    public static void EraseHistory() {
+    public static void EraseIndex() {
         try {
             File dir = HomeActivity.instance.getFilesDir();
             File file = new File(dir, "history");
@@ -212,9 +240,7 @@ public class XmlManager {
         }
     }
 
-    public static void ReadHistory() {
-
-
+    public static void ReadIndex() {
         File dir = HomeActivity.instance.getFilesDir();
         File file = new File(dir, "history");
         //boolean deleted = file.delete();
@@ -285,16 +311,16 @@ public class XmlManager {
         }
     }
 
-    public static void writeDataHistory(XmlSerializer serializer, List<PatientData> measurementSummaries) {
+    public static void writeDataHistory(XmlSerializer serializer, List<PatientData> patientDataList) {
         try {
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
             serializer.startTag("", "root");
-            for (PatientData measurementSummary : measurementSummaries) {
+            for (PatientData measurementSummary : patientDataList) {
 
                 serializer.startTag("", "measurement");
 
                 serializer.startTag("", "name");
-                serializer.text(measurementSummary.patientName);
+                serializer.text(measurementSummary.lastName);
                 serializer.endTag("", "name");
 
                 //serializer.startTag("", "date");

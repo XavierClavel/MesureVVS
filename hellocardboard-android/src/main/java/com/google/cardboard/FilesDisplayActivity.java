@@ -62,8 +62,9 @@ public class FilesDisplayActivity extends AppCompatActivity {
 
     void createLayout(PatientData patientData) {
 
-        String date = patientData.measurementDate;
-        String name = patientData.patientName;
+        //String date = patientData.measurementDate;
+        String lastName = patientData.lastName;
+        String firstName = patientData.firstName;
 
         RelativeLayout layout = new RelativeLayout(FilesDisplayActivity.this);
         layout.setPadding(20, 20, 20, 20);
@@ -79,15 +80,28 @@ public class FilesDisplayActivity extends AppCompatActivity {
         localLinLayout.setOrientation(LinearLayout.VERTICAL);
         localLinLayout.setLayoutParams(textParam);
 
-        TextView dateDisplay = new TextView(FilesDisplayActivity.this);
-        dateDisplay.setText(name);
-        dateDisplay.setTypeface(null, Typeface.BOLD);
-        dateDisplay.setTextSize(20f);
-        localLinLayout.addView(dateDisplay);
+        LinearLayout horizontal_layout1 = new LinearLayout(this);
+        layout1.setOrientation(LinearLayout.HORIZONTAL);
 
+        localLinLayout.addView(horizontal_layout1);
+
+        TextView lastNameDisplay = new TextView(FilesDisplayActivity.this);
+        lastNameDisplay.setText(lastName);
+        lastNameDisplay.setTypeface(null, Typeface.BOLD);
+        lastNameDisplay.setTextSize(20f);
+        horizontal_layout1.addView(lastNameDisplay);
+
+        TextView firstNameDisplay = new TextView(FilesDisplayActivity.this);
+        firstNameDisplay.setText(" " + firstName);
+        firstNameDisplay.setTextSize(20f);
+        horizontal_layout1.addView(firstNameDisplay);
+
+        /*
         TextView placeDisplay = new TextView(FilesDisplayActivity.this);
+
         placeDisplay.setText(date);
         localLinLayout.addView(placeDisplay);
+         */
 
         layout1.addView(localLinLayout);
 

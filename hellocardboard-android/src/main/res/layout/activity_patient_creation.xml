@@ -12,16 +12,23 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/patientCreation_name"
+            android:id="@+id/patientCreation_lastName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nom Patient"/>
+            android:hint="Nom"/>
+
+        <EditText
+            android:id="@+id/patientCreation_firstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Prénom"/>
+
 
         <EditText
             android:id="@+id/patientCreation_age"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Age"
+            android:hint="Année de naissance"
             android:inputType="number"/>
 
         <TextView
