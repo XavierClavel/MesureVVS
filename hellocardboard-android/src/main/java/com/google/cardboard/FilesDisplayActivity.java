@@ -96,12 +96,6 @@ public class FilesDisplayActivity extends AppCompatActivity {
         firstNameDisplay.setTextSize(20f);
         horizontal_layout1.addView(firstNameDisplay);
 
-        /*
-        TextView placeDisplay = new TextView(FilesDisplayActivity.this);
-
-        placeDisplay.setText(date);
-        localLinLayout.addView(placeDisplay);
-         */
 
         layout1.addView(localLinLayout);
 

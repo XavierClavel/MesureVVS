@@ -125,46 +125,20 @@ public class PatientDataDisplay extends AppCompatActivity {
         Log.d("comment", patientData.comment);
         commentDisplay.setText(patientData.comment);
 
-        DisplayMeasurementsSeries(true, "Série 1", FakeVVS(5));
-        DisplayMeasurementsSeries(false, "Série 2", FakeVVS(5));
+        //DisplayMeasurementsSeries(true, "Série 1", FakeVVS(5));
+        //DisplayMeasurementsSeries(false, "Série 2", FakeVVS(5));
 
-    }
-
-    ArrayList<Float> FakeVVS(int nbMeasurements) {
-        ArrayList<Float> mScore = new ArrayList<>();
-        float min = -5f;
-        float max = 5f;
-        Random r = new Random();
-
-        for (int i = 0; i < nbMeasurements; i++) {
-            mScore.add(min + r.nextFloat() * (max - min));
+        ArrayList<Measurement> measurements = XmlManager.ReadMeasurements(patientData.getMeasurementsFile());
+        for (Measurement measurement : measurements) {
+            DisplayMeasurementsSeries(measurement);
         }
-        return mScore;
+
     }
 
-    float CalculateMean(ArrayList<Float> measurement) {
-        float mean = 0f;
-        for (Float value : measurement) {
-            mean += value;
-        }
-        mean /= measurement.size();
-        return mean;
-    }
-
-    float CalculateVariance(float mean, ArrayList<Float> measurement) {
-        float variance = 0f;
-        for (Float value : measurement) {
-            variance +=  Math.pow(value-mean,2);
-        }
-        variance /= measurement.size();
-        return variance;
-    }
-
-    float CalculateStandardDeviation(float variance) {
-        return (float) Math.pow(variance,0.5f);
-    }
-
-    void DisplayMeasurementsSeries(boolean isSimpleVVS,String name, ArrayList<Float> values) {
+    void DisplayMeasurementsSeries(Measurement measurement) {
+        String name = measurement.name;
+        Boolean isSimpleVVS = measurement.isSimpleVVS;
+        ArrayList<Float> values = measurement.values;
         Log.d("measurements", "displaying");
         LinearLayout measurementsDisplay = isSimpleVVS ? layoutVVS_simple : layoutVVS_dynamique;
         TextView nameDisplay = new TextView(this);
@@ -181,25 +155,21 @@ public class PatientDataDisplay extends AppCompatActivity {
             measurementsDisplay.addView(valueDisplay);
         }
 
-        float mean = CalculateMean(values);
-        float variance = CalculateVariance(mean, values);
-        float standardDeviation = CalculateStandardDeviation(variance);
-
         valueDisplay = new TextView(this);
-        valueDisplay.setText("Moyenne : " + mean);
+        valueDisplay.setText("Moyenne : " + measurement.mean);
         measurementsDisplay.addView(valueDisplay);
 
         valueDisplay = new TextView(this);
-        valueDisplay.setText("Variance : " + variance);
+        valueDisplay.setText("Variance : " + measurement.variance);
         measurementsDisplay.addView(valueDisplay);
 
         valueDisplay = new TextView(this);
-        valueDisplay.setText("Ecart-type : " + standardDeviation);
+        valueDisplay.setText("Ecart-type : " + measurement.standardDeviation);
         measurementsDisplay.addView(valueDisplay);
 
     }
 
-    String GetGenreString(PatientData patientData) {
+    public static String GetGenreString(PatientData patientData) {
         switch (patientData.genre) {
             case male :
                 return "M";
@@ -209,4 +179,7 @@ public class PatientDataDisplay extends AppCompatActivity {
         }
         return "Error";
     }
+
+
+
 }

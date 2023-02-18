@@ -28,6 +28,10 @@ public class PatientData {
     public Float variance;
     public Float standardDeviation;
 
+    public static HashMap<RadioButton,PatientData> radioButtonToPatient = new HashMap<>();
+
+    String patientId;
+
     RadioGroup patientList;
     static HashMap<String,PatientData> dictionaryNameToPatient = new HashMap<>();
 
@@ -122,7 +126,7 @@ public class PatientData {
      * @return a unique filename
      */
     private String AttributeFileName() {
-        String patientId = HomeActivity.patientId+"";
+        patientId = HomeActivity.patientId+"";
         String filename = "patient" + patientId;
         HomeActivity.IncrementPatientId();
         return filename;
@@ -150,15 +154,20 @@ public class PatientData {
     private void AddToList() {
         RadioGroup  patientList = HomeActivity.instance.findViewById(R.id.patientList);
         RadioButton patientButton = new RadioButton(HomeActivity.instance);
-        patientButton.setText(lastName);
+        patientButton.setText(lastName + " " + firstName);
         patientList.addView(patientButton);
 
         dictionaryNameToPatient.put(filename, this);
+        radioButtonToPatient.put(patientButton,this);
     }
 
     public static PatientData getPatient(String filename) {
         if (dictionaryNameToPatient.containsKey(filename)) return dictionaryNameToPatient.get(filename);
         return null;
+    }
+
+    public String getMeasurementsFile() {
+        return "measurements" + patientId;
     }
 
 }

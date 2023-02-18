@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,23 +71,25 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     public static final byte[] byte_t = "t".getBytes();
     public static final byte[] byte_s = "s".getBytes();
 
-    private static PatientData selectedPatient;
+    public static PatientData selectedPatient;
 
     BluetoothAdapter bluetoothAdapter;
 
     Button mbuttonManette;
     Button mbuttonEcran;
     Button mbuttonOuvrir;
+    Button mbuttonfakeVVS;
     SeekBar mseekMesures;
     ToggleButton mtoggleSimple;
     ToggleButton mtoggleDynamique;
     TextView mtextMesures;
     //Button mbuttonTutoriel;
-    Button mbuttonFakeVVS;
+    Button mbuttonSelectPatient;
     RelativeLayout patientSelectPanel;
     RadioGroup patientList;
     Button newPatientButton;
-    TextView patientNameDisplay;
+    Button buttonExport;
+    static TextView patientNameDisplay;
 
     int modeMesure;
     public static HomeActivity instance;
@@ -100,6 +103,23 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         patientId++;
         mEditor.putInt("patientNumber", patientId);
         mEditor.commit();
+    }
+
+    Measurement FakeVVS(String name,Boolean isSimpleVVS,int nbMeasurements) {
+        ArrayList<Float> mScore = new ArrayList<>();
+        float min = -5f;
+        float max = 5f;
+        Random r = new Random();
+
+        for (int i = 0; i < nbMeasurements; i++) {
+            mScore.add(min + r.nextFloat() * (max - min));
+        }
+        return new Measurement(name, isSimpleVVS, mScore);
+    }
+
+    public static void SelectPatient(PatientData patient) {
+        selectedPatient = patient;
+        patientNameDisplay.setText(selectedPatient.lastName + selectedPatient.firstName);
     }
 
     protected void onCreate(Bundle paramBundle) {
@@ -125,6 +145,26 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         newPatientButton = findViewById(R.id.patientCreation);
         patientNameDisplay = findViewById(R.id.patientId);
 
+        buttonExport = findViewById(R.id.button_export);
+        mbuttonfakeVVS = findViewById(R.id.fakeVVS);
+        mbuttonSelectPatient = findViewById(R.id.placeholderButton); //to delete
+
+        buttonExport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CsvManager.WriteAllData();
+            }
+        });
+
+        mbuttonfakeVVS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("selected patient", selectedPatient.lastName);
+                Measurement measurement = FakeVVS("Série",true,5);
+                measurement.AddMeasurement();
+            }
+        });
+
         findViewById(R.id.deleteEverything).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,21 +185,17 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 patientSelectPanel.setVisibility(View.GONE);
-                String patientName = "";
                 RadioButton radioButton = radioGroup.findViewById(i);
                 boolean isChecked = radioButton.isChecked();
                 // If the radiobutton that has changed in check state is now checked...
                 if (isChecked) {
-                    patientName = radioButton.getText().toString();
-                    patientNameDisplay.setText(patientName);
-                    selectedPatient = PatientData.getPatient(patientName);
+                    SelectPatient(PatientData.radioButtonToPatient.get(radioButton));
                 }
             }
         });
 
 
-        mbuttonFakeVVS = findViewById(R.id.placeholderButton); //to delete
-        mbuttonFakeVVS.setOnClickListener(new View.OnClickListener() {
+        mbuttonSelectPatient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /*getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
@@ -346,11 +382,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             arrayScore =(ArrayList<Float>)  data.getSerializableExtra(VrActivity.RESULT_SCORE);
             String score = arrayScore.stream().map(Object::toString).collect(Collectors.joining(", "));
 
-            //save the last measurement
-            getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
-                    .edit()
-                    .putString(SHARED_PREF_USER_INFO_SCORE, score)
-                    .apply();
         }
         // Le bluetooth a été activé
         else if (REQUEST_ENABLE_BT == requestCode && RESULT_OK == resultCode) {

@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -26,11 +27,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 public class XmlManager {
-    static String defaultFilename = "scan_data";
-
-    public static List<Float> dataMemory = new ArrayList<>();
-    static String xmlDebugFile;
     public static List<PatientData> patientFiles = new ArrayList<>();
+
+    static void Sort() {
+        /*
+        List<PatientData> tempList = patientFiles;
+        tempList.sort(Comparator.comparing().);
+        List<String> stringList = new ArrayList<>();
+        stringList.sort(Comparator.);
+
+         */
+        }
 
 
     public static void Write(PatientData patientData) {
@@ -66,50 +73,26 @@ public class XmlManager {
         try {
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
             serializer.startTag("", "root");
-            try {
-
 
                 serializer.startTag("", "lastName");
                 serializer.text(patientData.lastName);
                 serializer.endTag("", "lastName");
-            } catch (Exception e) {
-                Log.d("failure", "lastname");
-            }
-            try {
-
 
                 serializer.startTag("", "firstName");
                 serializer.text(patientData.firstName);
                 serializer.endTag("", "firstName");
-            } catch (Exception e) {
-                Log.d("failure", "firstname");
-            }
-             try {
+
                 serializer.startTag("", "genre");
                 serializer.text(patientData.genre.name());
                 serializer.endTag("", "genre");
-             } catch (Exception e) {
-                 Log.d("failure", "genre");
-             }
 
-             try {
                 serializer.startTag("", "birthYear");
                 serializer.text(patientData.birthYear + "");
                 serializer.endTag("", "birthYear");
-             } catch (Exception e) {
-                 Log.d("failure", "birthyear");
-             }
- try {
+
                 serializer.startTag("","comment");
                 serializer.text(patientData.comment);
                 serializer.endTag("", "comment");
- } catch (Exception e) {
-     Log.d("failure", "commente");
- }
-
-                /*serializer.startTag("", "measurement");
-                serializer.text(measurementValue + "");
-                serializer.endTag("", "measurement");*/
 
             serializer.endTag("", "root");
             Log.d("xml manager", "successfully wrote data");
@@ -117,6 +100,113 @@ public class XmlManager {
             Log.d("xml manager", "failed to write records on xml file");
         }
 
+    }
+
+    public static void writeMeasurements(String filename, ArrayList<Measurement> measurements) {
+        Log.d("xml manager", "starting to write data");
+        try {
+            File dir = HomeActivity.instance.getFilesDir();
+            File file = new File(dir, filename);
+            boolean deleted = file.delete();
+            Log.d("deleted", "" + deleted);
+            FileOutputStream fos = HomeActivity.instance.openFileOutput(filename, Context.MODE_APPEND);
+            XmlSerializer serializer = Xml.newSerializer();
+            serializer.setOutput(fos, "UTF-8"); //definit le fichier de sortie
+            serializer.startDocument("UTF-8", true);
+            writeMeasurementsData(serializer, measurements);  //reference variable or value variable
+            serializer.endDocument();
+            serializer.flush();
+            fos.close();
+            //Log.d("xml manager", "end of writing operation");
+
+
+        } catch (Exception e) {
+            Log.d("Xml manager", "failed to write data in xml file");
+        }
+    }
+
+    public static void writeMeasurementsData(XmlSerializer serializer, List<Measurement> measurements) {
+        Log.d("xml manager", "starting to write");
+
+        try {
+            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+            serializer.startTag("", "root");
+
+            for (Measurement measurement : measurements) {
+                serializer.startTag("","measurement");
+
+                    serializer.startTag("","name");
+                    serializer.text(measurement.name);
+                    serializer.endTag("","name");
+
+                    serializer.startTag("","isSimpleVVS");
+                    serializer.text(measurement.isSimpleVVS.toString());
+                    serializer.endTag("","isSimpleVVS");
+
+                    for (Float value : measurement.values) {
+                        serializer.startTag("","value");
+                        serializer.text(value.toString());
+                        serializer.endTag("","value");
+                    }
+
+                serializer.endTag("","measurement");
+
+            }
+
+            serializer.endTag("", "root");
+            Log.d("xml manager", "successfully wrote data");
+        } catch (Exception e) {
+            Log.d("xml manager", "failed to write records on xml file");
+        }
+
+    }
+
+    public static ArrayList<Measurement> ReadMeasurements(String filename) {
+        ArrayList<Measurement> measurements = new ArrayList<>();
+        Log.d("xml manager", "start reading data");
+        //Read data string from file
+        String data = readRawData(filename);
+        InputStream is = null;
+        try {
+            is = new ByteArrayInputStream(data.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db;
+        NodeList items = null;
+        Document dom;
+        try {
+            db = dbf.newDocumentBuilder();
+            dom = db.parse(is);
+            dom.getDocumentElement().normalize();
+            //get all measurement tags
+            items = dom.getElementsByTagName("measurement");
+            Log.d("xml manager", "nb of xml measurements = " + items.getLength());
+            for (int i=0; i<items.getLength(); i++){
+                Element measurement = (Element)items.item(i);
+                String name = measurement.getElementsByTagName("name").item(0).getTextContent();
+                String isSimpleVVS_string = measurement.getElementsByTagName("isSimpleVVS").item(0).getTextContent();
+                Boolean isSimpleVVS = Boolean.parseBoolean(isSimpleVVS_string);
+                ArrayList<Float> values = new ArrayList<>();
+                NodeList nodes = measurement.getElementsByTagName("value");
+                for (int j=0; j < nodes.getLength();j++) {
+                    String value = nodes.item(j).getTextContent();
+                    values.add(Float.parseFloat(value));
+                }
+                measurements.add(new Measurement(name, isSimpleVVS,values));
+            }
+
+            Log.d("xml parser", "successfully read data");
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return measurements;
     }
 
     public static String getTimestamp() {
@@ -209,6 +299,7 @@ public class XmlManager {
 
     public static void AddToIndex(PatientData patientData) {
         patientFiles.add(patientData);
+        Sort();
         WriteHistory();
     }
 

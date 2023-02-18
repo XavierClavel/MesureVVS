@@ -87,6 +87,7 @@ public class PatientCreationActivity extends AppCompatActivity {
                     patientData = new PatientData(lastName, firstName,genre, birthYear);
                     patientData.SetComment(comment);
                     patientData.Save();
+                    HomeActivity.SelectPatient(patientData);
                     intent = new Intent((Context) getBaseContext(), HomeActivity.class);
                 }
                 else {
