@@ -108,6 +108,8 @@ public class PatientData {
         CalculateAge();
         AddToList();
         XmlManager.patientFiles.add(this);
+
+        patientId = filename.substring(7);
     }
 
     public String getGenreString() {
