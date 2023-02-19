@@ -19,7 +19,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,6 +32,18 @@ public class XmlManager {
     public static List<PatientData> patientFiles = new ArrayList<>();
 
     static void Sort() {
+        String[] nameArray = new String[patientFiles.size()];
+        HashMap<String,PatientData> nameToPatient = new HashMap<>();
+        for (int i = 0; i < patientFiles.size(); i++) {
+            String nameString = patientFiles.get(i).lastName + " " + patientFiles.get(i).firstName;
+            nameArray[i] = nameString.toLowerCase();
+            nameToPatient.put(nameArray[i],patientFiles.get(i));
+        }
+        Arrays.sort(nameArray);
+        patientFiles = new ArrayList<>();
+        for (String nameString : nameArray) {
+            patientFiles.add(nameToPatient.get(nameString));
+        }
         /*
         List<PatientData> tempList = patientFiles;
         tempList.sort(Comparator.comparing().);
