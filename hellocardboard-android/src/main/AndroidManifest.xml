@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".PatientSelectionActivity"
+            android:exported="false" />
+        <activity
             android:name=".PatientCreationActivity"
             android:exported="false" />
         <activity
@@ -62,27 +65,26 @@
         android:required="true" />
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
-        android:required="true" />
-
+        android:required="true" /> <!-- Required for Bluetooth Connection -->
     <uses-feature
         android:name="android.hardware.sensor.gyroscope"
-        android:required="true" /> <!-- Required for Bluetooth Connection -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Only required for apps targeting Android 12 and higher -->
+        android:required="true" />
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- Only required for apps targeting Android 12 and higher -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
         android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
+        android:maxSdkVersion="30" /> <!-- Extra permissions ex: FILE payloads -->
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" /> <!-- Extra permissions ex: FILE payloads -->
+        android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
 </manifest>

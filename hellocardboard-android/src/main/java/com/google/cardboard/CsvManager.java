@@ -125,8 +125,8 @@ public class CsvManager {
             line[0] = null;
             for (int i = 0; i < size; i++) {
                 Measurement measurement = measurements.get(i);
-                if (measurement.values.size() < j) line[i+1] = "";
-                else line[i+1] = Float.toString(measurement.values.get(j));
+                if (j < measurement.values.size()) line[i+1] = Float.toString(measurement.values.get(j));
+                else line[i+1] = "";
             }
             data.add(line);
         }

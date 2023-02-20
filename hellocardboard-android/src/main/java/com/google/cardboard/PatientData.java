@@ -28,8 +28,6 @@ public class PatientData {
     public Float variance;
     public Float standardDeviation;
 
-    public static HashMap<RadioButton,PatientData> radioButtonToPatient = new HashMap<>();
-
     String patientId;
 
     RadioGroup patientList;
@@ -154,13 +152,7 @@ public class PatientData {
     }
 
     private void AddToList() {
-        RadioGroup  patientList = HomeActivity.instance.findViewById(R.id.patientList);
-        RadioButton patientButton = new RadioButton(HomeActivity.instance);
-        patientButton.setText(lastName + " " + firstName);
-        patientList.addView(patientButton);
-
         dictionaryNameToPatient.put(filename, this);
-        radioButtonToPatient.put(patientButton,this);
     }
 
     public static PatientData getPatient(String filename) {

@@ -85,9 +85,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     TextView mtextMesures;
     //Button mbuttonTutoriel;
     Button mbuttonSelectPatient;
-    RelativeLayout patientSelectPanel;
-    RadioGroup patientList;
-    Button newPatientButton;
     Button buttonExport;
     static TextView patientNameDisplay;
 
@@ -119,7 +116,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
 
     public static void SelectPatient(PatientData patient) {
         selectedPatient = patient;
-        patientNameDisplay.setText(selectedPatient.lastName + selectedPatient.firstName);
+        patientNameDisplay.setText(selectedPatient.lastName + " " + selectedPatient.firstName);
     }
 
     protected void onCreate(Bundle paramBundle) {
@@ -140,10 +137,9 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mtextMesures = findViewById(R.id.tvNbMesures);
         mtoggleSimple = findViewById(R.id.tbSimple);
         mtoggleDynamique = findViewById(R.id.tbDynamique);
-        patientSelectPanel = findViewById(R.id.patientSelectionPanel);
-        patientList = findViewById(R.id.patientList);
-        newPatientButton = findViewById(R.id.patientCreation);
         patientNameDisplay = findViewById(R.id.patientId);
+
+        if (selectedPatient != null) patientNameDisplay.setText(selectedPatient.lastName + " " + selectedPatient.firstName);
 
         buttonExport = findViewById(R.id.button_export);
         mbuttonfakeVVS = findViewById(R.id.fakeVVS);
@@ -159,8 +155,9 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mbuttonfakeVVS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (selectedPatient == null) return;
                 Log.d("selected patient", selectedPatient.lastName);
-                Measurement measurement = FakeVVS("Série",true,5);
+                Measurement measurement = FakeVVS("Série",false,6);
                 measurement.AddMeasurement();
             }
         });
@@ -169,28 +166,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public void onClick(View view) {
                 XmlManager.EraseIndex();
-            }
-        });
-
-
-        newPatientButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent((Context) getBaseContext(), PatientCreationActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        patientList.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                patientSelectPanel.setVisibility(View.GONE);
-                RadioButton radioButton = radioGroup.findViewById(i);
-                boolean isChecked = radioButton.isChecked();
-                // If the radiobutton that has changed in check state is now checked...
-                if (isChecked) {
-                    SelectPatient(PatientData.radioButtonToPatient.get(radioButton));
-                }
             }
         });
 
@@ -207,7 +182,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 intentEcran.putExtra("modeMesure", modeMesure);
                 //startActivity(intentEcran);
                 startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);*/
-                patientSelectPanel.setVisibility(View.VISIBLE);
+                Intent intent = new Intent(getBaseContext(),PatientSelectionActivity.class);
+                startActivity(intent);
             }
         });
 

@@ -44,13 +44,6 @@ public class XmlManager {
         for (String nameString : nameArray) {
             patientFiles.add(nameToPatient.get(nameString));
         }
-        /*
-        List<PatientData> tempList = patientFiles;
-        tempList.sort(Comparator.comparing().);
-        List<String> stringList = new ArrayList<>();
-        stringList.sort(Comparator.);
-
-         */
         }
 
 
