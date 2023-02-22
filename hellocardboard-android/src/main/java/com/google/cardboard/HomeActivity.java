@@ -369,8 +369,13 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
 
             if (selectedPatient == null) return;
             boolean isSimpleVVS = mtoggleSimple.isChecked();
-            Measurement measurement = new Measurement(null, isSimpleVVS, arrayScore, arrayScore, selectedPatient);
-            measurement.AddMeasurement();
+            if (Measurement.isSameMeasurement(isSimpleVVS)) {
+                Measurement.AddValues(arrayScore, arrayScore);
+            }
+            else {
+                Measurement measurement = new Measurement(null, isSimpleVVS, arrayScore, arrayScore, selectedPatient);
+                measurement.AddMeasurement();
+            }
 
 
         }

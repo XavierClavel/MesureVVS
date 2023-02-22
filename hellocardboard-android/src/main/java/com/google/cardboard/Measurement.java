@@ -1,5 +1,8 @@
 package com.google.cardboard;
 
+import android.os.HardwarePropertiesManager;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -40,8 +43,23 @@ public class Measurement {
         lastVVSType = isSimpleVVS;
     }
 
-    public static boolean isIsSameMeasurement(PatientData patient, boolean VVSType) {
-        return lastPatient == patient && lastDate.equals(displayTime()) && lastVVSType.equals(VVSType);
+    public static void AddValues(ArrayList<Float> valuesLeft, ArrayList<Float> valuesRight) {
+        String measurementsFile = HomeActivity.selectedPatient.getMeasurementsFile();
+        ArrayList<Measurement> values = XmlManager.ReadMeasurements(measurementsFile, HomeActivity.selectedPatient);
+
+        Measurement measurement = values.get(values.size()-1);
+        for (Float f : valuesLeft) measurement.valuesLeft.add(f);
+        for (Float f : valuesRight) measurement.valuesRight.add(f);
+
+        XmlManager.writeMeasurements(measurementsFile,values);
+    }
+
+    public static boolean isSameMeasurement(boolean VVSType) {
+        if (lastPatient == null) return false;
+        Log.d("patient comparison", Boolean.toString(lastPatient == HomeActivity.selectedPatient));
+        Log.d("date comparison", Boolean.toString(lastDate.equals(displayTime())));
+        Log.d("vvs type comparison", Boolean.toString(lastVVSType.equals(VVSType)));
+        return lastPatient.filename.equals(HomeActivity.selectedPatient.filename) && lastDate.equals(displayTime()) && lastVVSType.equals(VVSType);
     }
 
 
