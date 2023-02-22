@@ -128,7 +128,7 @@ public class PatientDataDisplay extends AppCompatActivity {
         //DisplayMeasurementsSeries(true, "Série 1", FakeVVS(5));
         //DisplayMeasurementsSeries(false, "Série 2", FakeVVS(5));
 
-        ArrayList<Measurement> measurements = XmlManager.ReadMeasurements(patientData.getMeasurementsFile());
+        ArrayList<Measurement> measurements = XmlManager.ReadMeasurements(patientData.getMeasurementsFile(), patientData);
         for (Measurement measurement : measurements) {
             DisplayMeasurementsSeries(measurement);
         }
@@ -136,9 +136,9 @@ public class PatientDataDisplay extends AppCompatActivity {
     }
 
     void DisplayMeasurementsSeries(Measurement measurement) {
-        String name = measurement.name;
+        String name = measurement.date;
         Boolean isSimpleVVS = measurement.isSimpleVVS;
-        ArrayList<Float> values = measurement.values;
+        ArrayList<Float> values = measurement.valuesRight;
         Log.d("measurements", "displaying");
         LinearLayout measurementsDisplay = isSimpleVVS ? layoutVVS_simple : layoutVVS_dynamique;
         TextView nameDisplay = new TextView(this);

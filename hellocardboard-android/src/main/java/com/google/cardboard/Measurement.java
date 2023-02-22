@@ -1,35 +1,60 @@
 package com.google.cardboard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.stream.Stream;
 
 public class Measurement {
-    public String name;
+    public String date;
     public Boolean isSimpleVVS;
-    public ArrayList<Float> values;
+    public ArrayList<Float> valuesLeft;
+    public ArrayList<Float> valuesRight;
 
     public String mean;
     public String variance;
     public String standardDeviation;
 
-    public Measurement(String name, Boolean isSimpleVVS, ArrayList<Float> values) {
-        this.name = name;
-        this.isSimpleVVS = isSimpleVVS;
-        this.values = values;
+    public PatientData patient;
+    public static PatientData lastPatient;
+    public static String lastDate;
+    public static Boolean lastVVSType = null;
 
-        CalculateStats(values);
+    public static boolean isSameMeasurement;
+
+    public Measurement(String date,Boolean isSimpleVVS, ArrayList<Float> valuesLeft, ArrayList<Float> valuesRight, PatientData patient) {
+        this.date = date == null ? displayTime() : date;
+        this.isSimpleVVS = isSimpleVVS;
+        this.valuesLeft = valuesLeft;
+        this.valuesRight = valuesRight;
+
+        ArrayList<Float> fList = new ArrayList<>();
+        for (Float f : valuesLeft) fList.add(f);
+        for (Float f : valuesRight) fList.add(f);
+
+        CalculateStats(fList);
+
+
+        lastPatient = patient;
+        lastDate = date;
+        lastVVSType = isSimpleVVS;
     }
 
+    public static boolean isIsSameMeasurement(PatientData patient, boolean VVSType) {
+        return lastPatient == patient && lastDate.equals(displayTime()) && lastVVSType.equals(VVSType);
+    }
+
+
     public void AddMeasurement() {
-        name += displayTime();
+        date = displayTime();
 
         String measurementsFile = HomeActivity.selectedPatient.getMeasurementsFile();
-        ArrayList<Measurement> values = XmlManager.ReadMeasurements(measurementsFile);
+        ArrayList<Measurement> values = XmlManager.ReadMeasurements(measurementsFile, patient);
         values.add(this);
         XmlManager.writeMeasurements(measurementsFile,values);
     }
 
-    String displayTime() {
+    static String displayTime() {
         String day = Integer.toString(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
         String month = Integer.toString(Calendar.getInstance().get(Calendar.MONTH));
         String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));

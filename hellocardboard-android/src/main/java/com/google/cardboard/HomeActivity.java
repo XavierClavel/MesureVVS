@@ -15,6 +15,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Xml;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -111,7 +112,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         for (int i = 0; i < nbMeasurements; i++) {
             mScore.add(min + r.nextFloat() * (max - min));
         }
-        return new Measurement(name, isSimpleVVS, mScore);
+        return new Measurement(null,isSimpleVVS, mScore,mScore,selectedPatient);
     }
 
     public static void SelectPatient(PatientData patient) {
@@ -123,6 +124,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_home);
         instance = this;
+        //XmlManager.EraseIndex();
         XmlManager.ReadIndex();
         mPrefs = getSharedPreferences("label", 0);
         mEditor = mPrefs.edit();
@@ -157,8 +159,14 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             public void onClick(View view) {
                 if (selectedPatient == null) return;
                 Log.d("selected patient", selectedPatient.lastName);
-                Measurement measurement = FakeVVS("Série",false,6);
-                measurement.AddMeasurement();
+                Intent intentEcran = new Intent((Context) getBaseContext(), PlaceholderActivity.class);
+                intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));
+                intentEcran.putExtra("modeMesure", modeMesure);
+                //startActivity(intentEcran);
+                startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
+                //Measurement measurement = FakeVVS("Série",false,6);
+                //measurement.AddMeasurement();
+
             }
         });
 
@@ -355,8 +363,15 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         if (requestCode == REQUEST_CODE_ECRAN_ACTIVITY && resultCode == RESULT_OK && data != null) {
             Log.i(TAG, "Received result from Ecran");
             // Ajout des scores au fichier de préférences
+
             arrayScore =(ArrayList<Float>)  data.getSerializableExtra(VrActivity.RESULT_SCORE);
             String score = arrayScore.stream().map(Object::toString).collect(Collectors.joining(", "));
+
+            if (selectedPatient == null) return;
+            boolean isSimpleVVS = mtoggleSimple.isChecked();
+            Measurement measurement = new Measurement(null, isSimpleVVS, arrayScore, arrayScore, selectedPatient);
+            measurement.AddMeasurement();
+
 
         }
         // Le bluetooth a été activé

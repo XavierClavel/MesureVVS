@@ -143,17 +143,23 @@ public class XmlManager {
                 serializer.startTag("","measurement");
 
                     serializer.startTag("","name");
-                    serializer.text(measurement.name);
+                    serializer.text(measurement.date);
                     serializer.endTag("","name");
 
                     serializer.startTag("","isSimpleVVS");
                     serializer.text(measurement.isSimpleVVS.toString());
                     serializer.endTag("","isSimpleVVS");
 
-                    for (Float value : measurement.values) {
-                        serializer.startTag("","value");
+                    for (Float value : measurement.valuesRight) {
+                        serializer.startTag("","valueRight");
                         serializer.text(value.toString());
-                        serializer.endTag("","value");
+                        serializer.endTag("","valueRight");
+                    }
+
+                    for (Float value : measurement.valuesLeft) {
+                        serializer.startTag("","valueLeft");
+                        serializer.text(value.toString());
+                        serializer.endTag("","valueLeft");
                     }
 
                 serializer.endTag("","measurement");
@@ -168,7 +174,7 @@ public class XmlManager {
 
     }
 
-    public static ArrayList<Measurement> ReadMeasurements(String filename) {
+    public static ArrayList<Measurement> ReadMeasurements(String filename, PatientData patient) {
         ArrayList<Measurement> measurements = new ArrayList<>();
         Log.d("xml manager", "start reading data");
         //Read data string from file
@@ -195,13 +201,19 @@ public class XmlManager {
                 String name = measurement.getElementsByTagName("name").item(0).getTextContent();
                 String isSimpleVVS_string = measurement.getElementsByTagName("isSimpleVVS").item(0).getTextContent();
                 Boolean isSimpleVVS = Boolean.parseBoolean(isSimpleVVS_string);
-                ArrayList<Float> values = new ArrayList<>();
-                NodeList nodes = measurement.getElementsByTagName("value");
+                ArrayList<Float> valuesRight = new ArrayList<>();
+                ArrayList<Float> valuesLeft = new ArrayList<>();
+                NodeList nodes = measurement.getElementsByTagName("valueRight");
                 for (int j=0; j < nodes.getLength();j++) {
                     String value = nodes.item(j).getTextContent();
-                    values.add(Float.parseFloat(value));
+                    valuesRight.add(Float.parseFloat(value));
                 }
-                measurements.add(new Measurement(name, isSimpleVVS,values));
+                nodes = measurement.getElementsByTagName("valueLeft");
+                for (int j=0; j < nodes.getLength();j++) {
+                    String value = nodes.item(j).getTextContent();
+                    valuesLeft.add(Float.parseFloat(value));
+                }
+                measurements.add(new Measurement(name, isSimpleVVS, valuesRight, valuesLeft, patient));
             }
 
             Log.d("xml parser", "successfully read data");
