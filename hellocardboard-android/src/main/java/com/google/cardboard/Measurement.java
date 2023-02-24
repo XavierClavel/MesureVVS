@@ -13,6 +13,7 @@ public class Measurement {
     public Boolean isSimpleVVS;
     public ArrayList<Float> valuesLeft;
     public ArrayList<Float> valuesRight;
+    public ArrayList<Float> values;
 
     public String mean;
     public String variance;
@@ -31,11 +32,11 @@ public class Measurement {
         this.valuesLeft = valuesLeft;
         this.valuesRight = valuesRight;
 
-        ArrayList<Float> fList = new ArrayList<>();
-        for (Float f : valuesLeft) fList.add(f);
-        for (Float f : valuesRight) fList.add(f);
+        values = new ArrayList<>();
+        for (Float f : valuesLeft) values.add(f);
+        for (Float f : valuesRight) values.add(f);
 
-        CalculateStats(fList);
+        CalculateStats(values);
 
 
         lastPatient = patient;

@@ -15,7 +15,8 @@ import java.util.ArrayList;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
+//TODO : export only selected patient
+//TODO : choix raw data / data et tous patients/patient sélectionné
 public class CsvManager {
 
     public static void WriteAllData() {
@@ -25,7 +26,7 @@ public class CsvManager {
                 checkPermission();
                 for (PatientData patientData : XmlManager.patientFiles) {
                     ArrayList<Measurement> measurements = XmlManager.ReadMeasurements(patientData.getMeasurementsFile(), patientData);
-                    WriteCSV(patientData, measurements);
+                    WriteCSV(patientData, measurements, true);
                 }
                 Toast.makeText(HomeActivity.instance, "All measurements saved to CSV", Toast.LENGTH_LONG).show();
             }
@@ -33,11 +34,13 @@ public class CsvManager {
         runnable.run();
     }
 
-    public static void WriteCSV(PatientData patientData,ArrayList<Measurement> measurements) {
+    public static void WriteCSV(PatientData patientData,ArrayList<Measurement> measurements, boolean raw) {
         checkPermission();
-        String filename = patientData.getMeasurementsFile();
+        String filename;
         filename = patientData.lastName + "_" + patientData.firstName;
-        ArrayList<String[]> data = FormatData(patientData, measurements);
+        if (raw) filename += "_Raw";
+        ArrayList<String[]> data;
+        data = raw ? FormatRawData(patientData,measurements) : FormatData(patientData, measurements);
 
         String csv;
 
@@ -72,8 +75,104 @@ public class CsvManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    static ArrayList<String[]> FormatRawData(PatientData patientData, ArrayList<Measurement> measurements) {
+        int size = measurements.size();
+        ArrayList<String[]> data = new ArrayList<>();
+        String[] line = new String[size+1];
+        line[0] = "Date";
+        for (int i = 0; i<size; i++) {
+            line[i+1] = measurements.get(i).date;
+        }
+        data.add(line);
+
+        line = new String[size+1];
+        line[0] = "Nom";
+        for (int i = 0; i<size; i++) {
+            line[i+1] = patientData.lastName;
+        }
+        data.add(line);
+
+        line = new String[size+1];
+        line[0] = "Prénom";
+        for (int i = 0; i<size; i++) {
+            line[i+1] = patientData.firstName;
+        }
+        data.add(line);
+
+        line = new String[size+1];
+        line[0] = "Age";
+        for (int i = 0; i<size; i++) {
+            line[i+1] = Float.toString(patientData.age);
+        }
+        data.add(line);
+
+        line = new String[size+1];
+        line[0] = "Genre";
+        for (int i = 0; i<size; i++) {
+            line[i+1] = patientData.getGenreString();
+        }
+        data.add(line);
+
+        line = new String[size+1];
+        line[0] = "Type de VVS";
+        for (int i = 0; i<size; i++) {
+            line[i+1] = measurements.get(i).isSimpleVVS ? "VVS Simple" : "VVS Dynamique";
+        }
+        data.add(line);
+
+        int maxLength = getMaxLength(measurements);
+        for (int j = 0; j < maxLength; j++) {
+            line = new String[size+1];
+            line[0] = j == 0 ? "Valeurs" : null;
+            for (int i = 0; i < size; i++) {
+                Measurement measurement = measurements.get(i);
+                if (j < measurement.values.size()) line[i+1] = Float.toString(measurement.values.get(j));
+                else line[i+1] = "";
+            }
+            data.add(line);
+        }
+
+        return data;
+
+        /*
+        ArrayList<Measurement> staticVVS = new ArrayList<>();
+        ArrayList<Measurement> dynamicVVS = new ArrayList<>();
+        for (Measurement measurement : measurements) {
+            if (measurement.isSimpleVVS) staticVVS.add(measurement);
+            else dynamicVVS.add(measurement);
+        }
 
 
+        data.add(new String[]{
+                "Nom", "Prénom", "Age", "Genre"});
+        data.add(new String[]{
+                patientData.lastName, patientData.firstName, Integer.toString(patientData.age), PatientDataDisplay.GetGenreString(patientData)});
+
+        if (staticVVS.size() != 0) {
+            data.add(new String[]{});
+            data.add(new String[]{"VVS simple"});
+
+            DisplayMeasurements(data, staticVVS);
+        }
+
+        if (dynamicVVS.size() != 0) {
+            data.add(new String[]{});
+            data.add(new String[]{"VVS dynamique"});
+
+            DisplayMeasurements(data,dynamicVVS);
+        }
+
+         */
+    }
+
+    static int getMaxLength(ArrayList<Measurement> measurements) {
+        int max = 0;
+        for (Measurement measurement : measurements) {
+            if (measurement.values.size() > max) max = measurement.values.size();
+        }
+        return max;
     }
 
     static ArrayList<String[]> FormatData(PatientData patientData, ArrayList<Measurement> measurements) {
@@ -91,6 +190,13 @@ public class CsvManager {
         line[0] = "Nom";
         for (int i = 0; i<size; i++) {
             line[i+1] = patientData.lastName;
+        }
+        data.add(line);
+
+        line = new String[size+1];
+        line[0] = "Prénom";
+        for (int i = 0; i<size; i++) {
+            line[i+1] = patientData.firstName;
         }
         data.add(line);
 
@@ -150,43 +256,9 @@ public class CsvManager {
         }
         data.add(line);
 
-
-
-        /*
-        ArrayList<Measurement> staticVVS = new ArrayList<>();
-        ArrayList<Measurement> dynamicVVS = new ArrayList<>();
-        for (Measurement measurement : measurements) {
-            if (measurement.isSimpleVVS) staticVVS.add(measurement);
-            else dynamicVVS.add(measurement);
-        }
-
-
-        data.add(new String[]{
-                "Nom", "Prénom", "Age", "Genre"});
-        data.add(new String[]{
-                patientData.lastName, patientData.firstName, Integer.toString(patientData.age), PatientDataDisplay.GetGenreString(patientData)});
-
-        if (staticVVS.size() != 0) {
-            data.add(new String[]{});
-            data.add(new String[]{"VVS simple"});
-
-            DisplayMeasurements(data, staticVVS);
-        }
-
-        if (dynamicVVS.size() != 0) {
-            data.add(new String[]{});
-            data.add(new String[]{"VVS dynamique"});
-
-            DisplayMeasurements(data,dynamicVVS);
-        }
-
-         */
-
         return data;
-
-
     }
-/*
+
     static void DisplayMeasurements(ArrayList<String[]> data, ArrayList<Measurement> measurements) {
         int size = measurements.size();
         if(size == 0) return;
@@ -199,7 +271,7 @@ public class CsvManager {
         }
         data.add(line);
 
-        for (int j = 0; j < getMaxLength(measurements); j++) {
+        for (int j = 0; j < size; j++) {
             line = new String[size+1];
             line[0] = null;
             for (int i = 0; i < size; i++) {
@@ -234,7 +306,7 @@ public class CsvManager {
         data.add(line);
     }
 
-*/
+
     public static void checkPermission() {
         int permission1 = ContextCompat.checkSelfPermission(HomeActivity.instance, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 

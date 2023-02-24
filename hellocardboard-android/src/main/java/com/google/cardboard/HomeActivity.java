@@ -88,6 +88,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     Button mbuttonSelectPatient;
     Button buttonExport;
     static TextView patientNameDisplay;
+    static int nbMeasure = 5;
 
     int modeMesure;
     public static HomeActivity instance;
@@ -140,6 +141,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mtoggleSimple = findViewById(R.id.tbSimple);
         mtoggleDynamique = findViewById(R.id.tbDynamique);
         patientNameDisplay = findViewById(R.id.patientId);
+
+        //mseekMesures.setProgress(nbMeasure);
 
         if (selectedPatient != null) patientNameDisplay.setText(selectedPatient.lastName + " " + selectedPatient.firstName);
 
