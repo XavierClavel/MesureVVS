@@ -92,6 +92,8 @@ constexpr const char* kObjFragmentShader =
   long delta_time_room;//Vitesse de rotation de la piece
   float mAngleRoom;//Angle de rotation de la piece
   float mAngle =0.9f;//Angle de rotation de la barre, initialisé à 0.9 radians pour qu'elle ne soit pas verticale
+  JNIEnv* environnement;
+  int current_mode;
 }  // anonymous namespace
 
 HelloCardboardApp::HelloCardboardApp(JavaVM* vm, jobject obj,
@@ -130,6 +132,8 @@ HelloCardboardApp::~HelloCardboardApp() {
 }
 
 void HelloCardboardApp::OnSurfaceCreated(JNIEnv* env, int ModeMesure) {
+  environnement = env;
+  current_mode = ModeMesure;
   const int obj_vertex_shader =
       LoadGLShader(GL_VERTEX_SHADER, kObjVertexShader);
   const int obj_fragment_shader =
@@ -184,11 +188,17 @@ void HelloCardboardApp::SetScreenParams(int width, int height) {
   screen_params_changed_ = true;
 }
 
-void HelloCardboardApp::OnDrawFrame(int tourne) {
+void HelloCardboardApp::OnDrawFrame( int tourne, int sens_fond, int mode, float vitesseFond) {
   if (!UpdateDeviceParams()) {
     return;
   }
-
+  if (mode != current_mode) {
+    if (mode ==1){
+      HELLOCARDBOARD_CHECK(room_tex_.Initialize(environnement, java_asset_mgr_, "dynamique2.png"));
+    } else {
+      HELLOCARDBOARD_CHECK(room_tex_.Initialize(environnement, java_asset_mgr_, "black2.png"));
+    }
+  }
   // Update Head Pose.
   head_view_ = GetPose();
 
@@ -221,7 +231,7 @@ void HelloCardboardApp::OnDrawFrame(int tourne) {
     modelview_projection_room_ = projection_matrix * eye_view;
 
     // Draw room and target
-    DrawWorld(tourne);
+    DrawWorld(tourne, sens_fond, vitesseFond);
   }
 
   // Render
@@ -394,8 +404,8 @@ Matrix4x4 HelloCardboardApp::GetPose() {
          Quatf::FromXYZW(&out_orientation[0]).ToMatrix();
 }
 
-void HelloCardboardApp::DrawWorld(int tourne) {
-  DrawRoom();
+void HelloCardboardApp::DrawWorld(int tourne, int sens_fond, float vitesse) {
+  DrawRoom(sens_fond,  vitesse);
   DrawTarget(tourne);
 }
 
@@ -405,17 +415,21 @@ void HelloCardboardApp::DrawTarget(int tourne) {
   //Gestion de la variable tourne, qui fait tourner la barre dans un sens ou dans l'autre.
   //tourne = 10 pour reinisialiser sa position.
   if (tourne == 1){
-    delta_time += 1;
+    delta_time += 10;
 
 
   } else if (tourne == -1){
-    delta_time -= 1;
+    delta_time -= 10;
 
   } else if (tourne == 10){
       delta_time += 1000;
+  }else if (tourne == 2){
+    delta_time += 5;
+  }else if (tourne == -2){
+    delta_time -= 5;
   }
 
-  mAngle = 0.01f*delta_time;
+  mAngle = 0.001f*delta_time;
   mRotate = GetRotationMatrixZ(mAngle);
   modelview_projection_target_ = modelview_projection_target_ * mRotate ;
   glUseProgram(obj_program_);
@@ -451,12 +465,12 @@ float HelloCardboardApp::GetAngle(){
 }
 
 
-void HelloCardboardApp::DrawRoom() {
+void HelloCardboardApp::DrawRoom(int sens_fond, float vitesse) {
   glUseProgram(obj_program_);
   Matrix4x4 mRotateRoom;
   //La pièce tourne, pour la VVS dynamique
   delta_time_room += 1;
-  mAngleRoom = 0.005f*delta_time_room;
+  mAngleRoom = 0.005f*delta_time_room*sens_fond*vitesse;
   mRotateRoom = GetRotationMatrixZ(mAngleRoom);
   modelview_projection_room_ = modelview_projection_room_ * mRotateRoom ;
   std::array<float, 16> room_array = modelview_projection_room_.ToGlArray();
