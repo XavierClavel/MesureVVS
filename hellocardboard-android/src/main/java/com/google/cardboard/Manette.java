@@ -83,7 +83,20 @@ public class Manette extends Activity {
                 return true;
             }
         });
-        // Appuyer sur le bouton droite envoi l'instruction de rotation et le relacher envoi l'instruction d'arrêter la rotation
+        // Appuyer sur le bouton droite_lent envoi l'instruction de rotation et le relacher envoi l'instruction d'arrêter la rotation
+        (findViewById(R.id.droite_lent)).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                int action = motionEvent.getAction();
+                if (action == MotionEvent.ACTION_DOWN) {
+                    Manette.this.service.write(HomeActivity.byte_dl);
+                } else if (action == MotionEvent.ACTION_UP) {
+                    Manette.this.service.write(HomeActivity.byte_s);
+                }
+                return true;
+            }
+        });
+        // Appuyer sur le bouton gauche envoi l'instruction de rotation et le relacher envoi l'instruction d'arrêter la rotation
         (findViewById(R.id.gauche)).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -91,6 +104,20 @@ public class Manette extends Activity {
                 if (action == MotionEvent.ACTION_DOWN) {
                     view.performClick();
                     Manette.this.service.write(HomeActivity.byte_g);
+                } else if (action == MotionEvent.ACTION_UP) {
+                    Manette.this.service.write(HomeActivity.byte_s);
+                }
+                return true;
+            }
+        });
+        // Appuyer sur le bouton gauche_lent envoi l'instruction de rotation et le relacher envoi l'instruction d'arrêter la rotation
+        (findViewById(R.id.gauche_lent)).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                int action = motionEvent.getAction();
+                if (action == MotionEvent.ACTION_DOWN) {
+                    view.performClick();
+                    Manette.this.service.write(HomeActivity.byte_gl);
                 } else if (action == MotionEvent.ACTION_UP) {
                     Manette.this.service.write(HomeActivity.byte_s);
                 }
