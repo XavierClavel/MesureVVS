@@ -17,6 +17,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Activité permettant l'affichage des données du patient
+ */
 public class PatientDataDisplay extends AppCompatActivity {
     TextView nameDisplay;
     TextView firstNameDisplay;
@@ -125,9 +128,6 @@ public class PatientDataDisplay extends AppCompatActivity {
         Log.d("comment", patientData.comment);
         commentDisplay.setText(patientData.comment);
 
-        //DisplayMeasurementsSeries(true, "Série 1", FakeVVS(5));
-        //DisplayMeasurementsSeries(false, "Série 2", FakeVVS(5));
-
         ArrayList<Measurement> measurements = XmlManager.ReadMeasurements(patientData.getMeasurementsFile(), patientData);
         for (Measurement measurement : measurements) {
             DisplayMeasurementsSeries(measurement);
@@ -147,13 +147,22 @@ public class PatientDataDisplay extends AppCompatActivity {
         measurementsDisplay.addView(nameDisplay);
 
         TextView valueDisplay;
-
+        /*
         for (float value : values) {
             valueDisplay = new TextView(this);
             //TODO : régler le nombres de décimales
             valueDisplay.setText(value+"");
             measurementsDisplay.addView(valueDisplay);
         }
+         */
+
+        valueDisplay = new TextView(this);
+        valueDisplay.setText("Nombre de mesures avec une rotation à gauche : " + measurement.valuesLeft.size());
+        measurementsDisplay.addView(valueDisplay);
+
+        valueDisplay = new TextView(this);
+        valueDisplay.setText("Nombre de mesures avec une rotation à droite : " + measurement.valuesRight.size());
+        measurementsDisplay.addView(valueDisplay);
 
         valueDisplay = new TextView(this);
         valueDisplay.setText("Moyenne : " + measurement.mean);

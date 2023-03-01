@@ -13,6 +13,8 @@ enum genreType {male, female}
 
 
 //TODO : update list when updating patient file
+
+
 public class PatientData {
     public String lastName;
     public String firstName;

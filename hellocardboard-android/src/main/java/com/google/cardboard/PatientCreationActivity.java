@@ -2,7 +2,9 @@ package com.google.cardboard;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +14,9 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+/**
+ * Activité permettant la création et la modification des fiches patients
+ */
 public class PatientCreationActivity extends AppCompatActivity {
 
     Button validateButton;
@@ -27,12 +32,14 @@ public class PatientCreationActivity extends AppCompatActivity {
 
     String patientFile = null;
 
-    //TODO : prevent user from validating incomplete profile
+    AlertDialog alertDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_creation);
         genre = null;
+        alertDialog = CreateAlertMessage();
 
         if (getIntent().hasExtra("patient")) patientFile = getIntent().getExtras().getString("patient");
 
@@ -51,6 +58,7 @@ public class PatientCreationActivity extends AppCompatActivity {
             textFirstName.setText(patientData.firstName);
             textBirthYear.setText(patientData.birthYear+"");
             textComment.setText(patientData.comment);
+            genre = patientData.genre;
             RadioButton genreButton = GenreToButton(patientData.genre);
             genreButton.setChecked(true);
 
@@ -76,8 +84,15 @@ public class PatientCreationActivity extends AppCompatActivity {
 
                 String lastName = textLastName.getText().toString();
                 String firstName = textFirstName.getText().toString();
-                int birthYear = Integer.parseInt(textBirthYear.getText().toString());
+                String birthyearString = textBirthYear.getText().toString();
                 String comment = textComment.getText().toString();
+
+                if (lastName.isEmpty() || firstName.isEmpty() || birthyearString.isEmpty() || genre == null) {
+                    alertDialog.show();
+                    return;
+                }
+
+                int birthYear = Integer.parseInt(birthyearString);
 
                 Intent intent;
 
@@ -108,6 +123,19 @@ public class PatientCreationActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    AlertDialog CreateAlertMessage() {
+        AlertDialog.Builder builder =  new AlertDialog.Builder(this);
+        builder.setMessage("Veuillez à remplir tous les champs avant de finaliser la création du patient")
+                //.setCancelable(true)
+                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        Log.d("dialog", "created");
+        return builder.create();
     }
 
     void ParseString(String genreString) {

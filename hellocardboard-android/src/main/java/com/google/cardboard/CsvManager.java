@@ -3,6 +3,7 @@ package com.google.cardboard;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Debug;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,6 +13,8 @@ import com.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -27,6 +30,7 @@ public class CsvManager {
                 for (PatientData patientData : XmlManager.patientFiles) {
                     ArrayList<Measurement> measurements = XmlManager.ReadMeasurements(patientData.getMeasurementsFile(), patientData);
                     WriteCSV(patientData, measurements, true);
+                    WriteCSV(patientData, measurements, false);
                 }
                 Toast.makeText(HomeActivity.instance, "All measurements saved to CSV", Toast.LENGTH_LONG).show();
             }
@@ -62,7 +66,6 @@ public class CsvManager {
 
         }
 
-        //String csv = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename + ".csv");
         Log.d("path", csv);
 
         CSVWriter writer = null;
@@ -77,94 +80,110 @@ public class CsvManager {
         }
     }
 
+
     static ArrayList<String[]> FormatRawData(PatientData patientData, ArrayList<Measurement> measurements) {
         int size = measurements.size();
         ArrayList<String[]> data = new ArrayList<>();
-        String[] line = new String[size+1];
-        line[0] = "Date";
-        for (int i = 0; i<size; i++) {
-            line[i+1] = measurements.get(i).date;
-        }
-        data.add(line);
+        ArrayList<String> line;
+        String[] lineArray;
 
-        line = new String[size+1];
-        line[0] = "Nom";
+        line= new ArrayList<>();
+        line.add("Date");
         for (int i = 0; i<size; i++) {
-            line[i+1] = patientData.lastName;
+            if (measurements.get(i).valuesRight.size() != 0) line.add(measurements.get(i).date);
+            if (measurements.get(i).valuesLeft.size() != 0) line.add(measurements.get(i).date);
         }
-        data.add(line);
+        lineArray = new String[line.size()];
+        lineArray = line.toArray(lineArray);
+        data.add(lineArray);
 
-        line = new String[size+1];
-        line[0] = "Prénom";
+
+        line= new ArrayList<>();
+        line.add("Nom");
         for (int i = 0; i<size; i++) {
-            line[i+1] = patientData.firstName;
+            if (measurements.get(i).valuesRight.size() != 0) line.add(patientData.lastName);
+            if (measurements.get(i).valuesLeft.size() != 0) line.add(patientData.lastName);
         }
-        data.add(line);
+        lineArray = new String[line.size()];
+        line.toArray(lineArray);
+        data.add(lineArray);
 
-        line = new String[size+1];
-        line[0] = "Age";
+        line= new ArrayList<>();
+        line.add("Prénom");
         for (int i = 0; i<size; i++) {
-            line[i+1] = Float.toString(patientData.age);
-        }
-        data.add(line);
 
-        line = new String[size+1];
-        line[0] = "Genre";
+            if (measurements.get(i).valuesRight.size() != 0) line.add(patientData.firstName);
+            if (measurements.get(i).valuesLeft.size() != 0) line.add(patientData.firstName);
+        }
+        lineArray = new String[line.size()];
+        line.toArray(lineArray);
+        data.add(lineArray);
+
+        line= new ArrayList<>();
+        line.add("Age");
         for (int i = 0; i<size; i++) {
-            line[i+1] = patientData.getGenreString();
+            if (measurements.get(i).valuesRight.size() != 0) line.add(getPatientAgeAtMeasurement(measurements.get(i), patientData));
+            if (measurements.get(i).valuesLeft.size() != 0) line.add(getPatientAgeAtMeasurement(measurements.get(i), patientData));
         }
-        data.add(line);
+        lineArray = new String[line.size()];
+        line.toArray(lineArray);
+        data.add(lineArray);
 
-        line = new String[size+1];
-        line[0] = "Type de VVS";
+        line= new ArrayList<>();
+        line.add("Genre");
         for (int i = 0; i<size; i++) {
-            line[i+1] = measurements.get(i).isSimpleVVS ? "VVS Simple" : "VVS Dynamique";
+            if (measurements.get(i).valuesRight.size() != 0) line.add(patientData.getGenreString());
+            if (measurements.get(i).valuesLeft.size() != 0) line.add(patientData.getGenreString());
         }
-        data.add(line);
+        lineArray = new String[line.size()];
+        line.toArray(lineArray);
+        data.add(lineArray);
 
-        int maxLength = getMaxLength(measurements);
+        line= new ArrayList<>();
+        line.add("Type de VVS");
+        for (int i = 0; i<size; i++) {
+            if (measurements.get(i).valuesRight.size() != 0) line.add(measurements.get(i).isSimpleVVS ? "VVS Simple" : "VVS Dynamique");
+            if (measurements.get(i).valuesLeft.size() != 0) line.add(measurements.get(i).isSimpleVVS ? "VVS Simple" : "VVS Dynamique");
+        }
+        lineArray = new String[line.size()];
+        line.toArray(lineArray);
+        data.add(lineArray);
+
+        line= new ArrayList<>();
+        line.add("Sens de rotation");
+        for (int i = 0; i<size; i++) {
+            if (measurements.get(i).valuesRight.size() != 0) line.add("Droite");
+            if (measurements.get(i).valuesLeft.size() != 0) line.add("Gauche");
+        }
+        lineArray = new String[line.size()];
+        line.toArray(lineArray);
+        data.add(lineArray);
+
+
+        int maxLength = getMaxLengthRightLeft(measurements);
         for (int j = 0; j < maxLength; j++) {
-            line = new String[size+1];
-            line[0] = j == 0 ? "Valeurs" : null;
+            line= new ArrayList<>();
+            line.add(j == 0 ? "Valeurs" : null);
             for (int i = 0; i < size; i++) {
                 Measurement measurement = measurements.get(i);
-                if (j < measurement.values.size()) line[i+1] = Float.toString(measurement.values.get(j));
-                else line[i+1] = "";
+                if (measurements.get(i).valuesRight.size() != 0) {
+                    if (j < measurement.valuesRight.size()) line.add(Float.toString(measurement.valuesRight.get(j)));
+                    else line.add(null);
+                }
+
+                if (measurements.get(i).valuesLeft.size() != 0) {
+                    if (j < measurement.valuesLeft.size()) line.add(Float.toString(measurement.valuesLeft.get(j)));
+                    else line.add(null);
+                }
+
             }
-            data.add(line);
+            lineArray = new String[line.size()];
+            line.toArray(lineArray);
+            data.add(lineArray);
         }
 
         return data;
 
-        /*
-        ArrayList<Measurement> staticVVS = new ArrayList<>();
-        ArrayList<Measurement> dynamicVVS = new ArrayList<>();
-        for (Measurement measurement : measurements) {
-            if (measurement.isSimpleVVS) staticVVS.add(measurement);
-            else dynamicVVS.add(measurement);
-        }
-
-
-        data.add(new String[]{
-                "Nom", "Prénom", "Age", "Genre"});
-        data.add(new String[]{
-                patientData.lastName, patientData.firstName, Integer.toString(patientData.age), PatientDataDisplay.GetGenreString(patientData)});
-
-        if (staticVVS.size() != 0) {
-            data.add(new String[]{});
-            data.add(new String[]{"VVS simple"});
-
-            DisplayMeasurements(data, staticVVS);
-        }
-
-        if (dynamicVVS.size() != 0) {
-            data.add(new String[]{});
-            data.add(new String[]{"VVS dynamique"});
-
-            DisplayMeasurements(data,dynamicVVS);
-        }
-
-         */
     }
 
     static int getMaxLength(ArrayList<Measurement> measurements) {
@@ -173,6 +192,26 @@ public class CsvManager {
             if (measurement.values.size() > max) max = measurement.values.size();
         }
         return max;
+    }
+
+    static int getMaxLengthRightLeft(ArrayList<Measurement> measurements) {
+        int max = 0;
+        for (Measurement measurement : measurements) {
+            if (measurement.valuesRight.size() > max) max = measurement.valuesRight.size();
+            if (measurement.valuesLeft.size() > max) max = measurement.valuesLeft.size();
+        }
+        return max;
+    }
+
+    /**
+     *
+     * @param measurement
+     * @return the age the patient was at the time of the measurement
+     */
+    static String getPatientAgeAtMeasurement(Measurement measurement,PatientData patient) {
+        String measurementYear = measurement.date.split("/")[2];
+        Integer ageAtMeasurement = Integer.parseInt(measurementYear) - patient.birthYear;
+        return ageAtMeasurement.toString();
     }
 
     static ArrayList<String[]> FormatData(PatientData patientData, ArrayList<Measurement> measurements) {
@@ -203,7 +242,8 @@ public class CsvManager {
         line = new String[size+1];
         line[0] = "Age";
         for (int i = 0; i<size; i++) {
-            line[i+1] = Float.toString(patientData.age);
+            //line[i+1] = Float.toString(patientData.age);
+            line[i+1] = getPatientAgeAtMeasurement(measurements.get(i), patientData);
         }
         data.add(line);
 

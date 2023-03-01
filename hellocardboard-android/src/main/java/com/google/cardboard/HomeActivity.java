@@ -12,21 +12,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Xml;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -37,11 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /*
@@ -303,6 +289,31 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         });
     }
 
+    AlertDialog CreateAlertMessage() {
+        AlertDialog.Builder builder =  new AlertDialog.Builder(this);
+        builder.setSingleChoiceItems(0, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+        builder.setMessage("Are you sure you want to delete this patient file ? This operation is irreversible")
+                //.setCancelable(true)
+                .setPositiveButton("Delete file", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //Export Data
+                        CsvManager.WriteAllData();
+                    }
+                })
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        Log.d("dialog", "created");
+        return builder.create();
+    }
+
     // Listener affecté aux boutons Manette et Ecran tant que le bletooth n'est pas activé demandant de l'activer
     private View.OnClickListener enablebtListener = new View.OnClickListener() {
         @Override
@@ -336,7 +347,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         }
     };*/
 
-    // Listener pour le bouton Ecran, stock le nom du patient et démarre l'activit" VrActivity en renseignant le nombre de mesures et le mode de mesure
+    // Listener pour le bouton Ecran, stock le nom du patient et démarre l'activité VrActivity en renseignant le nombre de mesures et le mode de mesure
     private View.OnClickListener ecranListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -371,14 +382,11 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             String score = arrayScore.stream().map(Object::toString).collect(Collectors.joining(", "));
 
             if (selectedPatient == null) return;
+
             boolean isSimpleVVS = mtoggleSimple.isChecked();
-            if (Measurement.isSameMeasurement(isSimpleVVS)) {
-                Measurement.AddValues(arrayScore, arrayScore);
-            }
-            else {
-                Measurement measurement = new Measurement(null, isSimpleVVS, arrayScore, arrayScore, selectedPatient);
-                measurement.AddMeasurement();
-            }
+            Measurement.StartMeasurementSeries();
+            Measurement.AddMeasurementToSeries(isSimpleVVS, arrayScore, arrayScore);
+            Measurement.EndMeasurementSeries();
 
 
         }

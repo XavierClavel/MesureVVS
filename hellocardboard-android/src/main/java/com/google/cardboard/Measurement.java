@@ -1,12 +1,10 @@
 package com.google.cardboard;
 
-import android.os.HardwarePropertiesManager;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.stream.Stream;
+import java.util.HashMap;
 
 public class Measurement {
     public String date;
@@ -20,11 +18,22 @@ public class Measurement {
     public String standardDeviation;
 
     public PatientData patient;
-    public static PatientData lastPatient;
-    public static String lastDate;
-    public static Boolean lastVVSType = null;
 
-    public static boolean isSameMeasurement;
+    public static HashMap<Boolean,Measurement> VVSTypeToMeasurement = null;
+
+    public static void StartMeasurementSeries() {
+        VVSTypeToMeasurement = new HashMap<>();
+    }
+    public static void EndMeasurementSeries() {
+        if (VVSTypeToMeasurement.containsKey(true)) VVSTypeToMeasurement.get(true).AddMeasurement();
+        if (VVSTypeToMeasurement.containsKey(false)) VVSTypeToMeasurement.get(false).AddMeasurement();
+        VVSTypeToMeasurement = null;
+    }
+
+    public static void AddMeasurementToSeries(boolean VVSType, ArrayList<Float> valuesLeft, ArrayList<Float> valuesRight) {
+        if (VVSTypeToMeasurement.containsKey(VVSType)) VVSTypeToMeasurement.get(VVSType).AddValues(valuesLeft, valuesRight);
+        else VVSTypeToMeasurement.put(VVSType,new Measurement(null,VVSType,valuesLeft, valuesRight, HomeActivity.selectedPatient));
+    }
 
     public Measurement(String date,Boolean isSimpleVVS, ArrayList<Float> valuesLeft, ArrayList<Float> valuesRight, PatientData patient) {
         this.date = date == null ? displayTime() : date;
@@ -32,19 +41,29 @@ public class Measurement {
         this.valuesLeft = valuesLeft;
         this.valuesRight = valuesRight;
 
+        SetValuesList();
+
+        CalculateStats(values);
+    }
+
+    public void SetValuesList() {
         values = new ArrayList<>();
         for (Float f : valuesLeft) values.add(f);
         for (Float f : valuesRight) values.add(f);
-
-        CalculateStats(values);
-
-
-        lastPatient = patient;
-        lastDate = date;
-        lastVVSType = isSimpleVVS;
     }
 
-    public static void AddValues(ArrayList<Float> valuesLeft, ArrayList<Float> valuesRight) {
+    public void AddValues(ArrayList<Float> valuesLeft, ArrayList<Float> valuesRight) {
+        for (Float f : valuesLeft) {
+            values.add(f);
+            this.valuesLeft.add(f);
+        }
+        for (Float f : valuesRight) {
+            values.add(f);
+            this.valuesRight.add(f);
+        }
+
+
+        /*
         String measurementsFile = HomeActivity.selectedPatient.getMeasurementsFile();
         ArrayList<Measurement> values = XmlManager.ReadMeasurements(measurementsFile, HomeActivity.selectedPatient);
 
@@ -53,16 +72,9 @@ public class Measurement {
         for (Float f : valuesRight) measurement.valuesRight.add(f);
 
         XmlManager.writeMeasurements(measurementsFile,values);
-    }
 
-    public static boolean isSameMeasurement(boolean VVSType) {
-        if (lastPatient == null) return false;
-        Log.d("patient comparison", Boolean.toString(lastPatient == HomeActivity.selectedPatient));
-        Log.d("date comparison", Boolean.toString(lastDate.equals(displayTime())));
-        Log.d("vvs type comparison", Boolean.toString(lastVVSType.equals(VVSType)));
-        return lastPatient.filename.equals(HomeActivity.selectedPatient.filename) && lastDate.equals(displayTime()) && lastVVSType.equals(VVSType);
+         */
     }
-
 
     public void AddMeasurement() {
         date = displayTime();

@@ -13,6 +13,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+/**
+ * Activité ayant pour rôle d'afficher tous les patients existants pour que l'utilisateur puisse en sélectionner un dont il souhaite les détails
+ */
 public class FilesDisplayActivity extends AppCompatActivity {
 
     LinearLayout mainLayout;
