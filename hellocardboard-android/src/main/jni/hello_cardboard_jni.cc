@@ -62,8 +62,8 @@ JNI_METHOD(void, nativeOnSurfaceCreated)
 }
 
 JNI_METHOD(void, nativeOnDrawFrame)
-(JNIEnv* /*env*/, jobject /*obj*/, jlong native_app, jint tourne) {
-  native(native_app)->OnDrawFrame(tourne);
+(JNIEnv* /*env*/, jobject /*obj*/, jlong native_app, jint tourne, jint sens_fond, jint mode, jfloat vitesseFond) {
+  native(native_app)->OnDrawFrame(tourne, sens_fond, mode, vitesseFond);
 }
 
 

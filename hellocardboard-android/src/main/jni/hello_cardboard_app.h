@@ -67,7 +67,7 @@ class HelloCardboardApp {
   /**
    * Draws the scene. This should be called on the rendering thread.
    */
-  void OnDrawFrame(int tourne);
+  void OnDrawFrame(int tourne, int sens_fond, int mode, float vitesseFond);
 
 
   /**
@@ -130,7 +130,7 @@ private:
   /**
    * Draws all world-space objects for the given eye.
    */
-  void DrawWorld(int tourne);
+  void DrawWorld(int tourne, int sens_fond, float vitesseFond);
 
 
 
@@ -143,7 +143,7 @@ private:
     /**
      * Draws the room.
      */
-  void DrawRoom();
+  void DrawRoom(int orientation, float vitesseFond);
 
 
 

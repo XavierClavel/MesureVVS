@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:paddingLeft="16.0dip"
     android:paddingTop="16.0dip"
     android:paddingRight="16.0dip"
     android:paddingBottom="16.0dip"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".HomeActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
@@ -74,10 +75,10 @@
         android:id="@+id/tvRole"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/llVvsMode"
+        android:layout_below="@id/protocole"
         android:gravity="center"
-        android:paddingTop="10dp"
         android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:text="Rôle du téléphone"
         android:textSize="20sp" />
 
@@ -193,6 +194,13 @@
         android:layout_below="@id/debug"
         android:text="fake vvs" />
 
+
+    <Button
+        android:id="@+id/protocole"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/llVvsMode"
+        android:text="Protocole" />
 
     <!--    <Button
             android:id="@+id/tutoriel"

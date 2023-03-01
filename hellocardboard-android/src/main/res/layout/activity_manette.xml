@@ -17,6 +17,13 @@
         android:layout_weight="4"
         android:layout_marginEnd="16dp"
         android:text="@string/btn_adjust_left"/>
+    <Button
+        android:id="@+id/gauche_lent"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:layout_marginEnd="16dp"
+        android:text="Adjust Left (slowly)"/>
 
     <LinearLayout
             android:layout_width="0dp"
@@ -36,6 +43,13 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/droite_lent"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:layout_marginStart="16dp"
+        android:text="Adjust Right (slowly)" />
     <Button
         android:id="@+id/droite"
         android:layout_width="0dp"

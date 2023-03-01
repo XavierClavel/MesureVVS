@@ -118,8 +118,14 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
 
   HomeActivity.mHandler handler = new HomeActivity.mHandler();
 
+  ArrayList<ParameterSeries> listeParametres;
   private int mode_mesure;
   private int mesure_restantes;
+  private int nb_series_restantes;
+  private int num_serie;
+  private int sens_barre;
+  private int sens_fond;
+  private float vitesseFond;
 
   MyBluetoothService service;
   int tourne;
@@ -179,7 +185,31 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
     } else {
       mode_mesure = 0;
     }
-    Log.i("VRACTIVITY", String.valueOf(mode_mesure));
+    //Gestion des paramètres transmis. Si non reception, VVS statique 5 mesures droite droite
+    if (new Integer(getIntent().getExtras().getInt("parametres")) != null){
+      Log.d(TAG, "parametres non nuls");
+      listeParametres = getIntent().getParcelableArrayListExtra("parametres");
+      nb_series_restantes = listeParametres.size();
+      Log.d(TAG, "nb de séries restantes : " + String.valueOf(nb_series_restantes));
+      Log.d("VRactivity", "tag : " + TAG);
+      num_serie = 0;
+      ParameterSeries param_serie = listeParametres.get(num_serie);
+      mode_mesure = param_serie.getMode();
+      mesure_restantes = param_serie.getNbMesures();
+      sens_barre = param_serie.getSensBarre();
+      sens_fond = param_serie.getSensFond();
+      vitesseFond = param_serie.getVitesseFond();
+      nb_series_restantes--;
+      mesure_restantes --;
+    } else {
+      Log.d(TAG, "parametres  nuls");
+      mode_mesure = 0;
+      mesure_restantes = 5;
+      sens_barre = 0;
+      sens_fond = 1;
+      vitesseFond = 1;
+    }
+    Log.i("VRACTIVITY", " mode : " + String.valueOf(mode_mesure));
 
     //Gestion de la VR
     SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -250,6 +280,8 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   Gestion de la communication avec la manette
   Byte_d = tourner à droite
   Byte_g = tourner à gauche
+  Byte_dl = tourner lentement à droite
+  Byte_gl = tourner lentement à gauche
   Byte_t = resultat d'une mesure, si il n'y a plus de mesure restantes, affichage des résultats
    */
   private final Handler mHandler = new Handler(Looper.getMainLooper()) {
@@ -263,20 +295,46 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
           Log.i("InputStream","Received byte" + command);
           tourne = 1;
         }
+        else if (command.equals(new String(HomeActivity.byte_dl))) {
+          Log.i("InputStream","Received byte" + command);
+          tourne = 2;
+        }
+
         else if (command.equals(new String(HomeActivity.byte_g))) {
           Log.i("InputStream","Received byte" + command);
           tourne = -1;
+        }
+        else if (command.equals(new String(HomeActivity.byte_gl))) {
+          Log.i("InputStream","Received byte" + command);
+          tourne = -2;
         }
 
         else if (command.equals(new String(HomeActivity.byte_s))) {
           tourne = 0;
         }
         else if (command.equals(new String(HomeActivity.byte_t))) {
-          mScore.add(mAngle);
+          mScore.add(mAngle); //TODO à changer pour avoir une liste de score pour chaque série...
           if (mesure_restantes > 0) {
+            Log.d(TAG, "nb mesures restantes : " + String.valueOf(mesure_restantes + "  ; nb series restantes : " + nb_series_restantes));
             mesure_restantes --;
             tourne =  10;
-          } else {
+          } else if (nb_series_restantes > 0) {
+            nb_series_restantes --;
+            num_serie ++;
+            Log.d(TAG, "nb séries restantes : " + String.valueOf(nb_series_restantes));
+            ParameterSeries param_serie = listeParametres.get(num_serie);
+            mode_mesure = param_serie.getMode();
+            mesure_restantes = param_serie.getNbMesures();
+            sens_barre = param_serie.getSensBarre();
+            sens_fond = param_serie.getSensFond();
+            vitesseFond = param_serie.getVitesseFond();
+            mesure_restantes --;
+            Log.i(TAG, "nb mesures restantes: " + String.valueOf(mesure_restantes) + " ; mode: " + String.valueOf(mode_mesure) + " ; barre: " +
+                    String.valueOf(sens_barre) + " ; fond: " + String.valueOf(sens_fond));
+            tourne = 10;
+
+
+          }else {
             String strScore = mScore.stream().map(Object::toString).collect(Collectors.joining(", "));
             VrActivity.this.service.write(strScore.getBytes(StandardCharsets.UTF_8));
             endMesure();
@@ -340,7 +398,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
 
     @Override
     public void onDrawFrame(GL10 gl10) {
-      nativeOnDrawFrame(nativeApp, tourne);
+      nativeOnDrawFrame(nativeApp, tourne, sens_fond, mode_mesure, vitesseFond);
       //Log.i("InputStream","NATIVE DRAW ON FRAME OK");
       // Conversion de l'angle qui est en radians en degres
       mAngle = getAngle(nativeApp);
@@ -444,7 +502,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
 
   private native void nativeOnSurfaceCreated(long nativeApp, int ModeMesure);
 
-  private native void nativeOnDrawFrame(long nativeApp, int tourne);
+  private native void nativeOnDrawFrame(long nativeApp, int tourne, int sens_fond, int mode, float vitesseFond);
 
   private native void nativeOnPause(long nativeApp);
 
