@@ -49,6 +49,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_BT_PERMISSIONS = 2;
     private static final int REQUEST_CODE_ECRAN_ACTIVITY = 4;
+    private static final int REQUEST_CODE_PROTOCOLE = 17;
 
     // Nom du fichier et des éléments permettant de stocker la dernière mesure (fiche patient)
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO";
@@ -57,7 +58,9 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
 
     // Octets envoyés par la manette pour la rotation gauche/droite et la fin de la mesure
     public static final byte[] byte_d = "d".getBytes();
+    public static final byte[] byte_dl = "dl".getBytes();
     public static final byte[] byte_g = "g".getBytes();
+    public static final byte[] byte_gl = "gl".getBytes();
     public static final byte[] byte_t = "t".getBytes();
     public static final byte[] byte_s = "s".getBytes();
 
@@ -66,6 +69,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     Button mbuttonManette;
     Button mbuttonEcran;
     Button mbuttonOuvrir;
+    Button mbuttonProtocole;
     SeekBar mseekMesures;
     ToggleButton mtoggleSimple;
     ToggleButton mtoggleDynamique;
@@ -74,6 +78,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     //Button mbuttonTutoriel;
 
     int modeMesure;
+    //la liste des paramètres des conditions des séries de mesures
+    ArrayList<ParameterSeries> listeParametres = new ArrayList<ParameterSeries>();
 
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
@@ -84,6 +90,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         //mbuttonTutoriel = findViewById(R.id.tutoriel);
         mbuttonEcran = findViewById(R.id.ecran);
         mbuttonOuvrir = findViewById(R.id.openusrdata);
+        mbuttonProtocole = findViewById(R.id.protocole);
         mEditTextNom = findViewById(R.id.editT_nomPatient);
         mseekMesures = findViewById(R.id.sbNbMesures);
         mtextMesures = findViewById(R.id.tvNbMesures);
@@ -95,6 +102,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mbuttonOuvrir.setEnabled(false);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        listeParametres.add(new ParameterSeries(3,0,1,1,1));
 
         mbuttonEcran.setOnClickListener(enablebtListener);
         mbuttonManette.setOnClickListener(enablebtListener);
@@ -117,6 +125,15 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                                 .setTitle(mEditTextNom.getText().toString())
                                 .setMessage(alertMessage)
                                 .setCancelable(true).create().show();
+            }
+        });
+
+        // ouvre l'activité pour choisir le protocole
+        mbuttonProtocole.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, ProtocoleActivity.class);
+                startActivityForResult(intent,REQUEST_CODE_PROTOCOLE);
             }
         });
 
@@ -225,6 +242,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             Intent intentEcran = new Intent((Context) getBaseContext(), VrActivity.class);
             intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));
             intentEcran.putExtra("modeMesure", modeMesure);
+            intentEcran.putExtra("parametres", listeParametres);
             startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
         }
     };
@@ -256,6 +274,11 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             mbuttonManette.setOnClickListener(manetteListener);
             mbuttonEcran.setOnClickListener(ecranListener);
             //mbuttonTutoriel.setOnClickListener(tutorielListener);
+        } else if ((requestCode == REQUEST_CODE_PROTOCOLE) && (RESULT_OK== resultCode) && (data != null)) {
+            Log.i(TAG, "Received Result from Protocole");
+            listeParametres = data.getParcelableArrayListExtra("data");
+            Log.i(TAG, "nombres de séries prévues : " + String.valueOf(listeParametres.size()));
+            Log.i(TAG, "sens du fond de la première série : " + String.valueOf(listeParametres.get(0).getSensFond()));
         } else {
             Log.i(TAG, "Unknown ActivityResult received");
         }
