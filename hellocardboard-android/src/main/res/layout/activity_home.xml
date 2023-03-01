@@ -128,13 +128,18 @@
         android:layout_below="@id/tvfichepatient"
         android:text="Ouvrir" />
 
-
-
-<!--    <Button
-        android:id="@+id/tutoriel"
+    <Button
+        android:id="@+id/protocole"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/openusrdata"
-        android:text="Manuel D'utilisation" /> -->
+        android:layout_below="@+id/openusrdata"
+        android:text="Protocole" />
+
+    <!--    <Button
+            android:id="@+id/tutoriel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/openusrdata"
+            android:text="Manuel D'utilisation" /> -->
 
 </RelativeLayout>
