@@ -6,8 +6,8 @@
     <color name="darker_gray">#555</color>
     <color name="alignment_marker_color">#b4b4b4</color>
     <color name="white_transparent">#4cFFFFFF</color>
-    <color name="lightGray">#888</color>
-    <color name="deleteButtonColor">#f00</color>
-    <color name="primaryColor">#069</color>
-    <color name="deleteButtonTextColor">#000</color>
+    <color name="primaryColor">#F44336</color>
+    <color name="lightGray">#919191</color>
+    <color name="deleteButtonColor">#DA2518</color>
+    <color name="deleteButtonTextColor">#000000</color>
 </resources>
