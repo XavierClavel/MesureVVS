@@ -12,9 +12,9 @@ public class ParameterSeries implements Parcelable {
 
     public ParameterSeries(int nbMesures, int mode, int sensBarre, int sensFond, float vitesseFond) {
         this.nbMesures = nbMesures;
-        this.sensBarre = sensBarre;
-        this.sensFond = sensFond;
-        this.mode = mode;
+        this.sensBarre = sensBarre; //0 = droite (sens horaire) ; 1 = gauche (sens antihoraire)
+        this.sensFond = sensFond; //0 = droite (sens horaire) ; 1 = gauche (sens antihoraire)
+        this.mode = mode; //0 = vvs simple ; 1 = vvs dynamique
         this.vitesseFond = vitesseFond;
     }
 

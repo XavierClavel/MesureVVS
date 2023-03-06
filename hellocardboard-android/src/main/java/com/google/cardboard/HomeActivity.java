@@ -66,14 +66,14 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     BluetoothAdapter bluetoothAdapter;
 
     Button mbuttonManette;
-    Button mbuttonEcran;
+    static Button mbuttonEcran;
     Button mbuttonOuvrir;
     Button mbuttonfakeVVS;
     Button mbuttonProtocole;
-    SeekBar mseekMesures;
-    ToggleButton mtoggleSimple;
-    ToggleButton mtoggleDynamique;
-    TextView mtextMesures;
+    //SeekBar mseekMesures;
+    //ToggleButton mtoggleSimple;
+    //ToggleButton mtoggleDynamique;
+    //TextView mtextMesures;
     //Button mbuttonTutoriel;
     Button mbuttonSelectPatient;
     Button buttonExport;
@@ -109,6 +109,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     public static void SelectPatient(PatientData patient) {
         selectedPatient = patient;
         patientNameDisplay.setText(selectedPatient.lastName + " " + selectedPatient.firstName);
+        mbuttonEcran.setEnabled(true);
     }
     //la liste des paramètres des conditions des séries de mesures
     ArrayList<ParameterSeries> listeParametres = new ArrayList<ParameterSeries>();
@@ -129,15 +130,18 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mbuttonEcran = findViewById(R.id.ecran);
         mbuttonOuvrir = findViewById(R.id.openusrdata);
         mbuttonProtocole = findViewById(R.id.protocole);
-        mseekMesures = findViewById(R.id.sbNbMesures);
-        mtextMesures = findViewById(R.id.tvNbMesures);
-        mtoggleSimple = findViewById(R.id.tbSimple);
-        mtoggleDynamique = findViewById(R.id.tbDynamique);
+        //mseekMesures = findViewById(R.id.sbNbMesures);
+        //mtextMesures = findViewById(R.id.tvNbMesures);
+        //mtoggleSimple = findViewById(R.id.tbSimple);
+        //mtoggleDynamique = findViewById(R.id.tbDynamique);
         patientNameDisplay = findViewById(R.id.patientId);
 
         //mseekMesures.setProgress(nbMeasure);
 
-        if (selectedPatient != null) patientNameDisplay.setText(selectedPatient.lastName + " " + selectedPatient.firstName);
+        if (selectedPatient != null) {
+            patientNameDisplay.setText(selectedPatient.lastName + " " + selectedPatient.firstName);
+            mbuttonEcran.setEnabled(true);
+        } else mbuttonEcran.setEnabled(false);
 
         buttonExport = findViewById(R.id.button_export);
         mbuttonfakeVVS = findViewById(R.id.fakeVVS);
@@ -156,8 +160,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 if (selectedPatient == null) return;
                 Log.d("selected patient", selectedPatient.lastName);
                 Intent intentEcran = new Intent((Context) getBaseContext(), PlaceholderActivity.class);
-                intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));
-                intentEcran.putExtra("modeMesure", modeMesure);
+                intentEcran.putExtra("parametres", listeParametres);
                 //startActivity(intentEcran);
                 startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
                 //Measurement measurement = FakeVVS("Série",false,6);
@@ -191,8 +194,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             }
         });
 
-        mtextMesures.setText(String.valueOf(mseekMesures.getProgress()));
-        mbuttonEcran.setEnabled(false);
+
+        //mbuttonEcran.setEnabled(false);
         //mbuttonOuvrir.setEnabled(false);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -265,6 +268,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         });*/
 
         // Nombre de mesures, déterminé par le slider
+        /*
         mseekMesures.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -280,9 +284,10 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
-        });
+        });*/
 
         // VVS simple
+        /*
         mtoggleSimple.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -292,8 +297,10 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 }
             }
         });
+*/
 
         // VVS dynamique
+        /*
         mtoggleDynamique.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -303,7 +310,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                     Log.i("ModeDynamique", "ENTREE DANS UNE MESURE DYNAMIQUE");
                 }
             }
-        });
+        });*/
     }
 
     AlertDialog CreateAlertMessage() {
@@ -373,14 +380,13 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                     .putString(SHARED_PREF_USER_INFO_NAME, selectedPatient.filename)
                     .apply();
             Intent intentEcran = new Intent((Context) getBaseContext(), VrActivity.class);
-            intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));
-            intentEcran.putExtra("modeMesure", modeMesure);
             intentEcran.putExtra("parametres", listeParametres);
             startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
         }
     };
 
     static ArrayList<Float> arrayScore;
+    static ArrayList<ArrayList<Float>> scores;
 
     /**
      * Gestion des résultats des activités VrActivity et l'activation du buetooth
@@ -393,18 +399,23 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         super.onActivityResult(requestCode, resultCode, data);
         // L'activité VrActivity s'est terminée et renvoie les résultats de la mesure
         if (requestCode == REQUEST_CODE_ECRAN_ACTIVITY && resultCode == RESULT_OK && data != null) {
-            Log.i(TAG, "Received result from Ecran");
+            //Log.i(TAG, "Received result from Ecran");
+            listeParametres =  data.getParcelableArrayListExtra("listeparametres");
             // Ajout des scores au fichier de préférences
-
-            arrayScore =(ArrayList<Float>)  data.getSerializableExtra(VrActivity.RESULT_SCORE);
-            String score = arrayScore.stream().map(Object::toString).collect(Collectors.joining(", "));
+            scores = (ArrayList<ArrayList<Float>>) data.getSerializableExtra(VrActivity.RESULT_SCORE);
+            //arrayScore =(ArrayList<Float>)  data.getSerializableExtra(VrActivity.RESULT_SCORE);
+            //String score = arrayScore.stream().map(Object::toString).collect(Collectors.joining(", "));
 
             if (selectedPatient == null) return;
-
-            boolean isSimpleVVS = mtoggleSimple.isChecked();
-            Measurement.StartMeasurementSeries();
-            Measurement.AddMeasurementToSeries(isSimpleVVS, arrayScore, arrayScore);
-            Measurement.EndMeasurementSeries();
+            for (int i = 0; i<(scores.size()); i++) {
+                boolean isSimpleVVS;
+                if (listeParametres.get(i).getMode() ==0) isSimpleVVS = true; else isSimpleVVS = false;
+                ArrayList<Float> mesures = scores.get(i);
+                Measurement.StartMeasurementSeries();
+                Measurement.AddMeasurementToSeries(isSimpleVVS, mesures, mesures);
+                Measurement.EndMeasurementSeries();
+                //TODO: stocker aussi le sens du fond et de la barre pour chaque série de mesure
+            }
 
 
         }

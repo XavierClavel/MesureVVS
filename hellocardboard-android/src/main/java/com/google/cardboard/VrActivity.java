@@ -102,6 +102,8 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
 
   private ArrayList<Float> mScore = new ArrayList<Float>();
 
+  private ArrayList<ArrayList<Float>> scores = new ArrayList<>();
+
   private List<String> mControlsArrayAdapter;
 
 
@@ -201,7 +203,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
       vitesseFond = param_serie.getVitesseFond();
       nb_series_restantes--;
       mesure_restantes --;
-    } else {
+    } else {//on met des paramètres arbitraires si on ne reçoit rien
       Log.d(TAG, "parametres  nuls");
       mode_mesure = 0;
       mesure_restantes = 5;
@@ -260,14 +262,22 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
    */
   private void endMesure() {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    String message = "mesures enregistrées :\n";
+    for (int i = 0; i<scores.size(); i++) {
+      //message.concat(String.valueOf(scores.get(i)));
+      ArrayList<Float> score = scores.get(i);
+      String strScore = score.stream().map(Object::toString).collect(Collectors.joining(", "));
+      message = message + strScore + "\n";
+    }
     builder.setTitle("Mesure Terminée")
-            .setMessage("Votre score est de :" + mScore)
+            .setMessage(message)
             .setCancelable(false)
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent();
-                intent.putExtra(RESULT_SCORE, mScore);  //request code
+                intent.putExtra(RESULT_SCORE, scores);  //request code
+                intent.putExtra("listeparametres", listeParametres);
                 setResult(Activity.RESULT_OK, intent);  //result code
                 finish();
               }
@@ -313,12 +323,14 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
           tourne = 0;
         }
         else if (command.equals(new String(HomeActivity.byte_t))) {
-          mScore.add(mAngle); //TODO à changer pour avoir une liste de score pour chaque série...
+          mScore.add(mAngle);
           if (mesure_restantes > 0) {
             Log.d(TAG, "nb mesures restantes : " + String.valueOf(mesure_restantes + "  ; nb series restantes : " + nb_series_restantes));
             mesure_restantes --;
             tourne =  10;
           } else if (nb_series_restantes > 0) {
+            scores.add((ArrayList<Float>) mScore.clone());
+            mScore.clear();
             nb_series_restantes --;
             num_serie ++;
             Log.d(TAG, "nb séries restantes : " + String.valueOf(nb_series_restantes));
@@ -335,8 +347,10 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
 
 
           }else {
-            String strScore = mScore.stream().map(Object::toString).collect(Collectors.joining(", "));
-            VrActivity.this.service.write(strScore.getBytes(StandardCharsets.UTF_8));
+            scores.add((ArrayList<Float>) mScore.clone());
+            //String strScore = mScore.stream().map(Object::toString).collect(Collectors.joining(", "));
+            String strScores = scores.stream().map(Object::toString).collect(Collectors.joining(", "));
+            VrActivity.this.service.write(strScores.getBytes(StandardCharsets.UTF_8));
             endMesure();
           }
         } else {
