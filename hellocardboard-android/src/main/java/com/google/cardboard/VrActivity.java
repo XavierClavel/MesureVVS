@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.hardware.Sensor;
@@ -65,6 +66,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import static java.lang.Integer.min;
 
 /**
  * A Google Cardboard VR NDK sample application.
@@ -190,7 +193,31 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
     //Gestion des paramètres transmis. Si non reception, VVS statique 5 mesures droite droite
     if (new Integer(getIntent().getExtras().getInt("parametres")) != null){
       Log.d(TAG, "parametres non nuls");
-      listeParametres = getIntent().getParcelableArrayListExtra("parametres");
+      //listeParametres = getIntent().getParcelableArrayListExtra("parametres");
+
+      // Récupération des SharedPreferences
+
+      Log.i(TAG, "récupération des paramètres enregistrés dans les préférences partagées");
+      SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+      String listString = sharedPreferences.getString("parameters_list", "");
+      listeParametres = new ArrayList<>();
+      try {
+        if (!listString.isEmpty()) {
+          // Convertion de la chaîne de caractères en liste
+          String[] listArray = listString.split("ll");
+          for (int i = 0; i < min(listArray.length, 10); i++) {
+            ParameterSeries parameter = ParameterSeries.fromString(listArray[i]);
+            listeParametres.add(parameter);
+          }
+        }
+      } catch (Exception e) {
+        Log.d("TAG", "pb avec la récupération des paramètres sauvegardés");
+      }
+      //paramètres arbitraires si il n'y a pas de paramètres enregistrés
+      if (listeParametres.size()==0) {
+        listeParametres.add(new ParameterSeries(5,0,1,1,1));
+      }
+
       nb_series_restantes = listeParametres.size();
       Log.d(TAG, "nb de séries restantes : " + String.valueOf(nb_series_restantes));
       Log.d("VRactivity", "tag : " + TAG);

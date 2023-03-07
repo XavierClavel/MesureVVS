@@ -57,7 +57,7 @@ public class ProtocoleActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (listeParametres.size() ==0) {
-                    ParameterSeries parameterSeries = new ParameterSeries(5,0,0,0,1);
+                    ParameterSeries parameterSeries = new ParameterSeries(5,0,0,1,1);
                     listeParametres.add(parameterSeries);
                 }
                 // sauvegarde dans  les SharedPreferences
@@ -96,18 +96,11 @@ public class ProtocoleActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String listString = sharedPreferences.getString("parameters_list", "");
         ArrayList<ParameterSeries> listeParametresSauvegardes = new ArrayList<>();
-        Log.d(TAG, "string contenue dans les pref part : " + listString + "    ");
         try {
             if (!listString.isEmpty()) {
-                Log.d(TAG,"string non vide!");
                 // Convertion de la chaîne de caractères en liste
-                Log.d(TAG,"string non vide!");
                 String[] listArray = listString.split("ll");
-                Log.d(TAG,"string non vide!");
-                Log.d(TAG, "string récupérée dans les préférences partagées :" );
-                Log.d(TAG,"string non vide!");
                 for (int i = 0; i < min(listArray.length, 10); i++) {
-                    Log.d(TAG, "création du paramètre n° "+i);
                     ParameterSeries parameter = ParameterSeries.fromString(listArray[i]);
                     listeParametresSauvegardes.add(parameter);
                 }
@@ -117,7 +110,6 @@ public class ProtocoleActivity extends AppCompatActivity {
         }
         if (listeParametresSauvegardes.size() ==0) {
             // Add one serie by default
-            Log.d(TAG, "ajout d'une série");
             addSerie(15,0,0,1, 1F);
         } else {
             for (int i=0; i<listeParametresSauvegardes.size(); i++) {
@@ -133,6 +125,7 @@ public class ProtocoleActivity extends AppCompatActivity {
         View serieView = inflater.inflate(R.layout.serie_layout, containerLayout, false);
         listeView.add(serieView);
         containerLayout.addView(serieView, containerLayout.getChildCount() );
+        ValideButton.setEnabled(true);
 
         TextView serieTitle = serieView.findViewById(R.id.serieTitle);
         SeekBar mesuresSeekBar = serieView.findViewById(R.id.mesuresSeekBar);
@@ -154,14 +147,14 @@ public class ProtocoleActivity extends AppCompatActivity {
             modeButton.setText("VVS Simple");
         }
         if (sensFond ==1) {
-            fondButton.setText("droite");
+            fondButton.setText("horaire");
         } else {
-            fondButton.setText("gauche");
+            fondButton.setText("anti-horaire");
         }
         if (sensBarre ==0) {
-            barreButton.setText("droite");
+            barreButton.setText("horaire");
         } else {
-            barreButton.setText("gauche");
+            barreButton.setText("anti-horaire");
         }
         champVitesseFond.setText(Float.toString(vitesseFond));
 
@@ -175,6 +168,7 @@ public class ProtocoleActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int position = getPositionById(serieView);
                 listeParametres.remove(position);
+                check_not_empty();
                 listeView.remove(position);
                 containerLayout.removeView(serieView);
             }
@@ -227,10 +221,10 @@ public class ProtocoleActivity extends AppCompatActivity {
                 ParameterSeries para = listeParametres.get(position);
                 if (para.getSensBarre() ==0) {
                     para.setSensBarre(1);
-                    barreButton.setText("gauche");
+                    barreButton.setText("anti-horaire");
                 } else {
                     para.setSensBarre(0);
-                    barreButton.setText("droite");
+                    barreButton.setText("horaire");
                 }
                 Log.i(TAG, "changement du sens de la barre : sens de la barre " + String.valueOf(para.getSensBarre()));
             }
@@ -244,10 +238,10 @@ public class ProtocoleActivity extends AppCompatActivity {
                 ParameterSeries para = listeParametres.get(position);
                 if (para.getSensFond() ==-1) {
                     para.setsensFond(1);
-                    fondButton.setText("droite");
+                    fondButton.setText("horaire");
                 } else {
                     para.setsensFond(-1);
-                    fondButton.setText("gauche");
+                    fondButton.setText("anti-horaire");
                 }
                 Log.i(TAG, "changement du sens du fond : sens " + String.valueOf(para.getSensFond()));
             }
@@ -296,5 +290,11 @@ public class ProtocoleActivity extends AppCompatActivity {
             }
         }
         return null;
+    }
+
+    private void check_not_empty() {
+        if (listeParametres.size() < 1) {
+            ValideButton.setEnabled(false);
+        }
     }
 }

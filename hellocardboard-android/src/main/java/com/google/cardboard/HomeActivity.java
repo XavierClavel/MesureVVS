@@ -33,8 +33,7 @@ import java.util.stream.Collectors;
 /*
  * Activité principale, permet :
  *  - le choix du nom du patient
- *  - le choix du nombre de mesures
- *  - le choix du type de mesure (simple/dynamique)
+ *  - d'accéder à l'activité pour planifier le protocole de mesures
  *  - le choix du rôle du téléphone (manette/VR)
  *  - l'accès à la dernière mesure
  */
@@ -70,11 +69,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     Button mbuttonOuvrir;
     Button mbuttonfakeVVS;
     Button mbuttonProtocole;
-    //SeekBar mseekMesures;
-    //ToggleButton mtoggleSimple;
-    //ToggleButton mtoggleDynamique;
-    //TextView mtextMesures;
-    //Button mbuttonTutoriel;
     Button mbuttonSelectPatient;
     Button buttonExport;
     static TextView patientNameDisplay;
@@ -130,13 +124,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mbuttonEcran = findViewById(R.id.ecran);
         mbuttonOuvrir = findViewById(R.id.openusrdata);
         mbuttonProtocole = findViewById(R.id.protocole);
-        //mseekMesures = findViewById(R.id.sbNbMesures);
-        //mtextMesures = findViewById(R.id.tvNbMesures);
-        //mtoggleSimple = findViewById(R.id.tbSimple);
-        //mtoggleDynamique = findViewById(R.id.tbDynamique);
         patientNameDisplay = findViewById(R.id.patientId);
 
-        //mseekMesures.setProgress(nbMeasure);
 
         if (selectedPatient != null) {
             patientNameDisplay.setText(selectedPatient.lastName + " " + selectedPatient.firstName);
@@ -247,70 +236,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             }
         });
 
-        /*
-        // Nom du patient, nécessaire pour activer les boutons Ecran et Ouvrir
-        mEditTextNom.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                mbuttonEcran.setEnabled(!editable.toString().isEmpty());
-                mbuttonOuvrir.setEnabled(!editable.toString().isEmpty());
-            }
-        });*/
-
-        // Nombre de mesures, déterminé par le slider
-        /*
-        mseekMesures.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mtextMesures.setText(String.valueOf(progress));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });*/
-
-        // VVS simple
-        /*
-        mtoggleSimple.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    modeMesure = 0;
-                    mtoggleDynamique.setChecked(false);
-                }
-            }
-        });
-*/
-
-        // VVS dynamique
-        /*
-        mtoggleDynamique.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    modeMesure = 1;
-                    mtoggleSimple.setChecked(false);
-                    Log.i("ModeDynamique", "ENTREE DANS UNE MESURE DYNAMIQUE");
-                }
-            }
-        });*/
     }
 
     AlertDialog CreateAlertMessage() {
@@ -355,6 +280,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                     .edit()
                     .putString(SHARED_PREF_USER_INFO_NAME, selectedPatient.filename)
                     .apply();*/ //(je vois pas trop ce que ça fait là du coup je l'ai commenté)
+            // (ça faisait crashé l'app si le smartphone "manette" n'a pas de client sélectionné alors que ce n'est pas nécessaire)
             startActivity(new Intent(HomeActivity.this, ConnecteEcran.class));
         }
     };
@@ -408,13 +334,19 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
 
             if (selectedPatient == null) return;
             for (int i = 0; i<(scores.size()); i++) {
+                Log.d(TAG, "traitement des données : " + listeParametres.size());
                 boolean isSimpleVVS;
                 if (listeParametres.get(i).getMode() ==0) isSimpleVVS = true; else isSimpleVVS = false;
+                int sens_mesure = listeParametres.get(i).getSensFond();
                 ArrayList<Float> mesures = scores.get(i);
                 Measurement.StartMeasurementSeries();
-                Measurement.AddMeasurementToSeries(isSimpleVVS, mesures, mesures);
+                if (sens_mesure ==1) {
+                    Measurement.AddMeasurementToSeries(isSimpleVVS, mesures, new ArrayList<>());
+                } else {
+                    Measurement.AddMeasurementToSeries(isSimpleVVS, new ArrayList<>(), mesures);
+                }
                 Measurement.EndMeasurementSeries();
-                //TODO: stocker aussi le sens du fond et de la barre pour chaque série de mesure
+                //TODO: stocker aussi le sens de la barre pour chaque série de mesure
             }
 
 
