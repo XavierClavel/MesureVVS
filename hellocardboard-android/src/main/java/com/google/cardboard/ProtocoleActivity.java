@@ -81,6 +81,7 @@ public class ProtocoleActivity extends AppCompatActivity {
                 Intent resultIntent = new Intent();
                 for (int i = 0; i < listeParametres.size(); i++) {
                     ParameterSeries p = listeParametres.get(i);
+                    Log.d(TAG, "vitesse : " + p.getVitesseFond());
                     Log.i(TAG, "envoie des paramètres suivants :\n" + String.valueOf(i) + " ; nb: " + String.valueOf(p.getNbMesures()) + " ; mode: " + String.valueOf(p.getMode()) + " ; barre: " +
                             String.valueOf(p.getSensBarre()) + " ; fond: " + String.valueOf(p.getSensFond()) + " ; vitessFond : " + String.valueOf(p.getVitesseFond()) + "\n");
                 }
@@ -256,7 +257,7 @@ public class ProtocoleActivity extends AppCompatActivity {
                 EditText champVitesse = (EditText) ((LinearLayout) ((LinearLayout) ((LinearLayout)(((LinearLayout) serieView).getChildAt(2))).getChildAt(2)).getChildAt(1)).getChildAt(0);
                 String s = String.valueOf(champVitesse.getText());
                 try {
-                    float sens_fond = Float.valueOf(s);
+                    para.setVitesseFond(Float.parseFloat(s));
                     Log.d(TAG, "changement de la vitesse du fond : " + s);
                 } catch (NumberFormatException e) {
                     Log.d(TAG, "tentative de changement de la vitesse du fond (ratée ): " + s);

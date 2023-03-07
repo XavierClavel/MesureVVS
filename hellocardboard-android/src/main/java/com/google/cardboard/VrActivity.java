@@ -132,6 +132,8 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   private int sens_fond;
   private float vitesseFond;
 
+  private boolean fini;
+
   MyBluetoothService service;
   int tourne;
   ActivityResultLauncher<Intent> mActivityResultLauncher = registerForActivityResult(
@@ -238,6 +240,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
       sens_fond = 1;
       vitesseFond = 1;
     }
+    fini = false;
     Log.i("VRACTIVITY", " mode : " + String.valueOf(mode_mesure));
 
     //Gestion de la VR
@@ -327,61 +330,57 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
       super.handleMessage(param1Message);
       if (param1Message.what == 0) {
         String command = new String((byte[]) param1Message.obj, 0, param1Message.arg1);
-        //La
-        if (command.equals(new String(HomeActivity.byte_d))) {
-          Log.i("InputStream","Received byte" + command);
-          tourne = 1;
-        }
-        else if (command.equals(new String(HomeActivity.byte_dl))) {
-          Log.i("InputStream","Received byte" + command);
-          tourne = 2;
-        }
-
-        else if (command.equals(new String(HomeActivity.byte_g))) {
-          Log.i("InputStream","Received byte" + command);
-          tourne = -1;
-        }
-        else if (command.equals(new String(HomeActivity.byte_gl))) {
-          Log.i("InputStream","Received byte" + command);
-          tourne = -2;
-        }
-
-        else if (command.equals(new String(HomeActivity.byte_s))) {
-          tourne = 0;
-        }
-        else if (command.equals(new String(HomeActivity.byte_t))) {
-          mScore.add(mAngle);
-          if (mesure_restantes > 0) {
-            Log.d(TAG, "nb mesures restantes : " + String.valueOf(mesure_restantes + "  ; nb series restantes : " + nb_series_restantes));
-            mesure_restantes --;
-            tourne =  10;
-          } else if (nb_series_restantes > 0) {
-            scores.add((ArrayList<Float>) mScore.clone());
-            mScore.clear();
-            nb_series_restantes --;
-            num_serie ++;
-            Log.d(TAG, "nb séries restantes : " + String.valueOf(nb_series_restantes));
-            ParameterSeries param_serie = listeParametres.get(num_serie);
-            mode_mesure = param_serie.getMode();
-            mesure_restantes = param_serie.getNbMesures();
-            sens_barre = param_serie.getSensBarre();
-            sens_fond = param_serie.getSensFond();
-            vitesseFond = param_serie.getVitesseFond();
-            mesure_restantes --;
-            Log.i(TAG, "nb mesures restantes: " + String.valueOf(mesure_restantes) + " ; mode: " + String.valueOf(mode_mesure) + " ; barre: " +
-                    String.valueOf(sens_barre) + " ; fond: " + String.valueOf(sens_fond));
-            tourne = 10;
+        Log.d(TAG, String.valueOf(fini));
+        if (!fini) {
+          if (command.equals(new String(HomeActivity.byte_d))) {
+            Log.i("InputStream", "Received byte" + command);
+            tourne = 1;
+          } else if (command.equals(new String(HomeActivity.byte_dl))) {
+            Log.i("InputStream", "Received byte" + command);
+            tourne = 2;
+          } else if (command.equals(new String(HomeActivity.byte_g))) {
+            Log.i("InputStream", "Received byte" + command);
+            tourne = -1;
+          } else if (command.equals(new String(HomeActivity.byte_gl))) {
+            Log.i("InputStream", "Received byte" + command);
+            tourne = -2;
+          } else if (command.equals(new String(HomeActivity.byte_s))) {
+            tourne = 0;
+          } else if (command.equals(new String(HomeActivity.byte_t))) {
+            mScore.add(mAngle);
+            if (mesure_restantes > 0) {
+              Log.d(TAG, "nb mesures restantes : " + String.valueOf(mesure_restantes + "  ; nb series restantes : " + nb_series_restantes));
+              mesure_restantes--;
+              tourne = 10;
+            } else if (nb_series_restantes > 0) {
+              scores.add((ArrayList<Float>) mScore.clone());
+              mScore.clear();
+              nb_series_restantes--;
+              num_serie++;
+              Log.d(TAG, "nb séries restantes : " + String.valueOf(nb_series_restantes));
+              ParameterSeries param_serie = listeParametres.get(num_serie);
+              mode_mesure = param_serie.getMode();
+              mesure_restantes = param_serie.getNbMesures();
+              sens_barre = param_serie.getSensBarre();
+              sens_fond = param_serie.getSensFond();
+              vitesseFond = param_serie.getVitesseFond();
+              mesure_restantes--;
+              Log.i(TAG, "nb mesures restantes: " + String.valueOf(mesure_restantes) + " ; mode: " + String.valueOf(mode_mesure) + " ; barre: " +
+                      String.valueOf(sens_barre) + " ; fond: " + String.valueOf(sens_fond));
+              tourne = 10;
 
 
-          }else {
-            scores.add((ArrayList<Float>) mScore.clone());
-            //String strScore = mScore.stream().map(Object::toString).collect(Collectors.joining(", "));
-            String strScores = scores.stream().map(Object::toString).collect(Collectors.joining(", "));
-            VrActivity.this.service.write(strScores.getBytes(StandardCharsets.UTF_8));
-            endMesure();
+            } else {
+              fini = true;
+              scores.add((ArrayList<Float>) mScore.clone());
+              //String strScore = mScore.stream().map(Object::toString).collect(Collectors.joining(", "));
+              String strScores = scores.stream().map(Object::toString).collect(Collectors.joining(", "));
+              VrActivity.this.service.write(strScores.getBytes(StandardCharsets.UTF_8));
+              endMesure();
+            }
+          } else {
+            Log.i("Ecran: HandleMessage", "unknown byte" + command + ", " + new String(HomeActivity.byte_g));
           }
-        } else {
-          Log.i("Ecran: HandleMessage", "unknown byte" + command + ", " + new String(HomeActivity.byte_g));
         }
       }
     }
