@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,6 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
+
+import static java.lang.Integer.min;
 
 public class ProtocoleActivity extends AppCompatActivity {
 
@@ -46,7 +49,7 @@ public class ProtocoleActivity extends AppCompatActivity {
         addSerieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addSerie();
+                addSerie(5,0,0,1, 1F);
             }
         });
         //bouton valider
@@ -57,11 +60,29 @@ public class ProtocoleActivity extends AppCompatActivity {
                     ParameterSeries parameterSeries = new ParameterSeries(5,0,0,0,1);
                     listeParametres.add(parameterSeries);
                 }
+                // sauvegarde dans  les SharedPreferences
+                SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                // Convertion de la liste en chaîne de caractères
+                String listString = listeParametres.get(0).toString();
+
+                for (int i = 1; i < listeParametres.size(); i++) {
+                    listString += "ll" + listeParametres.get(i).toString();
+                }
+
+                // Ajout de la chaîne de caractères aux SharedPreferences
+                editor.putString("parameters_list", listString);
+                editor.apply();
+
+
+
                 Intent resultIntent = new Intent();
                 for (int i = 0; i < listeParametres.size(); i++) {
                     ParameterSeries p = listeParametres.get(i);
-                    Log.i(TAG, String.valueOf(i) + " ; nb: " + String.valueOf(p.getNbMesures()) + " ; mode: " + String.valueOf(p.getMode()) + " ; barre: " +
-                            String.valueOf(p.getSensBarre()) + " ; fond: " + String.valueOf(p.getSensFond()) + " ; vitessFond : " + String.valueOf(p.getVitesseFond()));
+                    Log.i(TAG, "envoie des paramètres suivants :\n" + String.valueOf(i) + " ; nb: " + String.valueOf(p.getNbMesures()) + " ; mode: " + String.valueOf(p.getMode()) + " ; barre: " +
+                            String.valueOf(p.getSensBarre()) + " ; fond: " + String.valueOf(p.getSensFond()) + " ; vitessFond : " + String.valueOf(p.getVitesseFond()) + "\n");
                 }
                 resultIntent.putExtra("data", listeParametres);
                 setResult(Activity.RESULT_OK, resultIntent);
@@ -69,15 +90,45 @@ public class ProtocoleActivity extends AppCompatActivity {
             }
         });
 
+        // Récupération des SharedPreferences
 
-
-
-        // Add one serie by default
-        addSerie();
+        Log.i(TAG, "récupération des paramètres enregistrés dans les préférences partagées");
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        String listString = sharedPreferences.getString("parameters_list", "");
+        ArrayList<ParameterSeries> listeParametresSauvegardes = new ArrayList<>();
+        Log.d(TAG, "string contenue dans les pref part : " + listString + "    ");
+        try {
+            if (!listString.isEmpty()) {
+                Log.d(TAG,"string non vide!");
+                // Convertion de la chaîne de caractères en liste
+                Log.d(TAG,"string non vide!");
+                String[] listArray = listString.split("ll");
+                Log.d(TAG,"string non vide!");
+                Log.d(TAG, "string récupérée dans les préférences partagées :" );
+                Log.d(TAG,"string non vide!");
+                for (int i = 0; i < min(listArray.length, 10); i++) {
+                    Log.d(TAG, "création du paramètre n° "+i);
+                    ParameterSeries parameter = ParameterSeries.fromString(listArray[i]);
+                    listeParametresSauvegardes.add(parameter);
+                }
+            }
+        } catch (Exception e) {
+            Log.d("TAG", "pb avec la récupération des paramètres sauvegardés");
+        }
+        if (listeParametresSauvegardes.size() ==0) {
+            // Add one serie by default
+            Log.d(TAG, "ajout d'une série");
+            addSerie(15,0,0,1, 1F);
+        } else {
+            for (int i=0; i<listeParametresSauvegardes.size(); i++) {
+                ParameterSeries parameterSeries = listeParametresSauvegardes.get(i);
+                addSerie(parameterSeries.getNbMesures(),parameterSeries.getMode(),parameterSeries.getSensBarre(),parameterSeries.getSensFond(),parameterSeries.getVitesseFond());
+            }
+        }
     }
 
-    private void addSerie() {
-        listeParametres.add(new ParameterSeries(15,0,0,1,1));
+    private void addSerie(int nbMesures, int mode, int sensBarre, int sensFond, Float vitesseFond) {
+        listeParametres.add(new ParameterSeries(nbMesures,mode,sensBarre,sensFond,vitesseFond));
         LayoutInflater inflater = LayoutInflater.from(this);
         View serieView = inflater.inflate(R.layout.serie_layout, containerLayout, false);
         listeView.add(serieView);
@@ -90,11 +141,30 @@ public class ProtocoleActivity extends AppCompatActivity {
         Button modeButton = serieView.findViewById(R.id.modeButton);
         Button deleteButton = serieView.findViewById(R.id.deleteButton);
         TextView mtextMesures = findViewById(R.id.tvNbMesures);
-        EditText vitesseFond = findViewById(R.id.vitesseFond);
+        EditText champVitesseFond = findViewById(R.id.vitesseFond);
         Button validationVitesseFondButton = serieView.findViewById(R.id.validationVitesse);
 
-        TextView textMesure = (TextView) ((LinearLayout)(((LinearLayout) serieView).getChildAt(0))).getChildAt(2);
-        textMesure.setText("15");
+        //initialisation des boutons aux bonnes valeurs
+        mesuresSeekBar.setProgress(nbMesures);
+        //TextView textMesure = (TextView) ((LinearLayout)(((LinearLayout) serieView).getChildAt(0))).getChildAt(2);
+        mtextMesures.setText("nbMesures");
+        if (mode ==1) {
+            modeButton.setText("VVS Dynamique");
+        } else {
+            modeButton.setText("VVS Simple");
+        }
+        if (sensFond ==1) {
+            fondButton.setText("droite");
+        } else {
+            fondButton.setText("gauche");
+        }
+        if (sensBarre ==0) {
+            barreButton.setText("droite");
+        } else {
+            barreButton.setText("gauche");
+        }
+        champVitesseFond.setText(Float.toString(vitesseFond));
+
 
 
         serieCount++;

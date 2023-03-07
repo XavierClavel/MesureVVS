@@ -88,18 +88,22 @@ public class ConnecteEcran extends AppCompatActivity {
                 // Récupération des informations de connexion depuis les préférences partagées
                 SharedPreferences prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
                 String address = prefs.getString("device_address", null);
-                if (address != null) {
-                    selected_device = mBtAdapter.getRemoteDevice(address);
-                    // Connexion automatique à l'appareil Bluetooth précédemment appairé
-                    // Utilisez les classes BluetoothSocket ou BluetoothGatt pour établir une connexion Bluetooth
-                    if (mBtAdapter.isDiscovering()) {
-                        mBtAdapter.cancelDiscovery();
+                try {
+                    if (address != null) {
+                        selected_device = mBtAdapter.getRemoteDevice(address);
+                        // Connexion automatique à l'appareil Bluetooth précédemment appairé
+                        // Utilisez les classes BluetoothSocket ou BluetoothGatt pour établir une connexion Bluetooth
+                        if (mBtAdapter.isDiscovering()) {
+                            mBtAdapter.cancelDiscovery();
+                        }
+                        Intent intent = new Intent((Context) getBaseContext(), Manette.class);
+                        intent.putExtra("mac", selected_device.getAddress());
+                        Toast.makeText(getBaseContext(), selected_device.getAddress(), Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                        finish();
                     }
-                    Intent intent = new Intent((Context) getBaseContext(), Manette.class);
-                    intent.putExtra("mac", selected_device.getAddress());
-                    Toast.makeText(getBaseContext(), selected_device.getAddress(), Toast.LENGTH_SHORT).show();
-                    startActivity(intent);
-                    finish();
+                } catch (Exception e) {
+                    Log.d(TAG, "erreur lors de la récupération de l'adresse bluetooth enregistrée");
                 }
                 // Récupération des appareils appairés
                 Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();

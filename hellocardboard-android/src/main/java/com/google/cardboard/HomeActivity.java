@@ -351,10 +351,10 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     private View.OnClickListener manetteListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
+            /*getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
                     .edit()
                     .putString(SHARED_PREF_USER_INFO_NAME, selectedPatient.filename)
-                    .apply();
+                    .apply();*/ //(je vois pas trop ce que ça fait là du coup je l'ai commenté)
             startActivity(new Intent(HomeActivity.this, ConnecteEcran.class));
         }
     };

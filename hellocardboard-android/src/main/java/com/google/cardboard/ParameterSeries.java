@@ -2,8 +2,10 @@ package com.google.cardboard;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 public class ParameterSeries implements Parcelable {
+    private static final String TAG = "ParameterSeries";
     private int nbMesures;
     private int sensBarre;
     private int sensFond;
@@ -91,18 +93,19 @@ public class ParameterSeries implements Parcelable {
 
     }
 
-    /*
     @Override
-    public int describeContents() {
-        return 0;
+    public String toString() {
+        return nbMesures + "l" + sensBarre + "l" + sensFond + "l" + mode + "l" + vitesseFond;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(nbMesures);
-        parcel.writeInt(sensBarre);
-        parcel.writeInt(sensFond);
-        parcel.writeInt(mode);
-        parcel.writeFloat(vitesseFond);
-    }*/
+    public static ParameterSeries fromString(String s) {
+        Log.d(TAG,s);
+        String[] parts = s.split("l");
+        int nbMesures = Integer.parseInt(parts[0]);
+        int sensBarre = Integer.parseInt(parts[1]);
+        int sensFond = Integer.parseInt(parts[2]);
+        int mode = Integer.parseInt(parts[3]);
+        float vitesseFond = Float.parseFloat(parts[4]);
+        return new ParameterSeries(nbMesures, mode, sensBarre, sensFond, vitesseFond);
+    }
 }
