@@ -101,6 +101,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   private final String NAME = "Vertical_Subjective_Connection";
 
   private ArrayList<Float> mScore = new ArrayList<Float>();
+  private ArrayList<Float> totalScore = new ArrayList<>();
 
   private List<String> mControlsArrayAdapter;
 
@@ -146,6 +147,9 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   public void onCreate(Bundle savedInstance) {
     super.onCreate(savedInstance);
     Log.i("InputStream","ENtrée dans VrActivity");
+
+    Measurement.StartMeasurementSeries();
+    totalScore = new ArrayList<>();
 
     nativeApp = nativeOnCreate(getAssets());
 
@@ -201,10 +205,10 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
       vitesseFond = param_serie.getVitesseFond();
       nb_series_restantes--;
       mesure_restantes --;
-    } else {
+    } else {  //cas où le protocole n'est pas utilisé, auquel cas on utilise les données de HomeActivity
       Log.d(TAG, "parametres  nuls");
-      mode_mesure = 0;
-      mesure_restantes = 5;
+      //mode_mesure = 0;
+      //mesure_restantes = 5;
       sens_barre = 0;
       sens_fond = 1;
       vitesseFond = 1;
@@ -259,16 +263,15 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   Gestion de la fin de la mesure, communication du score à HomeActivity
    */
   private void endMesure() {
+    Measurement.EndMeasurementSeries();
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle("Mesure Terminée")
-            .setMessage("Votre score est de :" + mScore)
+            .setMessage("Votre score est de :" + totalScore)
             .setCancelable(false)
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent();
-                intent.putExtra(RESULT_SCORE, mScore);  //request code
-                setResult(Activity.RESULT_OK, intent);  //result code
                 finish();
               }
             })
@@ -313,31 +316,38 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
           tourne = 0;
         }
         else if (command.equals(new String(HomeActivity.byte_t))) {
-          mScore.add(mAngle); //TODO à changer pour avoir une liste de score pour chaque série...
+          mScore.add(mAngle);
+          totalScore.add(mAngle);
           if (mesure_restantes > 0) {
             Log.d(TAG, "nb mesures restantes : " + String.valueOf(mesure_restantes + "  ; nb series restantes : " + nb_series_restantes));
             mesure_restantes --;
             tourne =  10;
-          } else if (nb_series_restantes > 0) {
-            nb_series_restantes --;
-            num_serie ++;
-            Log.d(TAG, "nb séries restantes : " + String.valueOf(nb_series_restantes));
-            ParameterSeries param_serie = listeParametres.get(num_serie);
-            mode_mesure = param_serie.getMode();
-            mesure_restantes = param_serie.getNbMesures();
-            sens_barre = param_serie.getSensBarre();
-            sens_fond = param_serie.getSensFond();
-            vitesseFond = param_serie.getVitesseFond();
-            mesure_restantes --;
-            Log.i(TAG, "nb mesures restantes: " + String.valueOf(mesure_restantes) + " ; mode: " + String.valueOf(mode_mesure) + " ; barre: " +
-                    String.valueOf(sens_barre) + " ; fond: " + String.valueOf(sens_fond));
-            tourne = 10;
+          } else {
+            Log.d("série achevée, type de VVS", Boolean.toString(mode_mesure==0));
+            Measurement.AddMeasurementToSeries(mode_mesure == 0,sens_barre == 0,mScore);
+            mScore = new ArrayList<>();
+
+            if (nb_series_restantes > 0) {
+              nb_series_restantes--;
+              num_serie++;
+              Log.d(TAG, "nb séries restantes : " + String.valueOf(nb_series_restantes));
+              ParameterSeries param_serie = listeParametres.get(num_serie);
+              mode_mesure = param_serie.getMode();
+              mesure_restantes = param_serie.getNbMesures();
+              sens_barre = param_serie.getSensBarre();
+              sens_fond = param_serie.getSensFond();
+              vitesseFond = param_serie.getVitesseFond();
+              mesure_restantes--;
+              Log.i(TAG, "nb mesures restantes: " + String.valueOf(mesure_restantes) + " ; mode: " + String.valueOf(mode_mesure) + " ; barre: " +
+                      String.valueOf(sens_barre) + " ; fond: " + String.valueOf(sens_fond));
+              tourne = 10;
 
 
-          }else {
-            String strScore = mScore.stream().map(Object::toString).collect(Collectors.joining(", "));
-            VrActivity.this.service.write(strScore.getBytes(StandardCharsets.UTF_8));
-            endMesure();
+            } else {
+              String strScore = mScore.stream().map(Object::toString).collect(Collectors.joining(", "));
+              VrActivity.this.service.write(strScore.getBytes(StandardCharsets.UTF_8));
+              endMesure();
+            }
           }
         } else {
           Log.i("Ecran: HandleMessage", "unknown byte" + command + ", " + new String(HomeActivity.byte_g));

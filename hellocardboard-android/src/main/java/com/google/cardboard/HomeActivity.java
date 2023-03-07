@@ -68,7 +68,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     Button mbuttonManette;
     Button mbuttonEcran;
     Button mbuttonOuvrir;
-    Button mbuttonfakeVVS;
     Button mbuttonProtocole;
     SeekBar mseekMesures;
     ToggleButton mtoggleSimple;
@@ -87,23 +86,12 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     static SharedPreferences.Editor mEditor;
 
     static int patientId;
+    AlertDialog noPatientDialog;
 
     public static void IncrementPatientId() {
         patientId++;
         mEditor.putInt("patientNumber", patientId);
         mEditor.commit();
-    }
-
-    Measurement FakeVVS(String name,Boolean isSimpleVVS,int nbMeasurements) {
-        ArrayList<Float> mScore = new ArrayList<>();
-        float min = -5f;
-        float max = 5f;
-        Random r = new Random();
-
-        for (int i = 0; i < nbMeasurements; i++) {
-            mScore.add(min + r.nextFloat() * (max - min));
-        }
-        return new Measurement(null,isSimpleVVS, mScore,mScore,selectedPatient);
     }
 
     public static void SelectPatient(PatientData patient) {
@@ -136,11 +124,11 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         patientNameDisplay = findViewById(R.id.patientId);
 
         //mseekMesures.setProgress(nbMeasure);
+        noPatientDialog = CreateNoPatientAlertMessage();
 
         if (selectedPatient != null) patientNameDisplay.setText(selectedPatient.lastName + " " + selectedPatient.firstName);
 
         buttonExport = findViewById(R.id.button_export);
-        mbuttonfakeVVS = findViewById(R.id.fakeVVS);
         mbuttonSelectPatient = findViewById(R.id.placeholderButton); //to delete
 
         buttonExport.setOnClickListener(new View.OnClickListener() {
@@ -150,49 +138,16 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             }
         });
 
-        mbuttonfakeVVS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (selectedPatient == null) return;
-                Log.d("selected patient", selectedPatient.lastName);
-                Intent intentEcran = new Intent((Context) getBaseContext(), PlaceholderActivity.class);
-                intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));
-                intentEcran.putExtra("modeMesure", modeMesure);
-                //startActivity(intentEcran);
-                startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
-                //Measurement measurement = FakeVVS("Série",false,6);
-                //measurement.AddMeasurement();
-
-            }
-        });
-
-        findViewById(R.id.deleteEverything).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                XmlManager.EraseIndex();
-            }
-        });
-
-
         mbuttonSelectPatient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
-                        .edit()
-                        .putString(SHARED_PREF_USER_INFO_NAME, mEditTextNom.getText().toString())
-                        .apply();
-                Intent intentEcran = new Intent((Context) getBaseContext(), PlaceholderActivity.class);
-                intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));
-                intentEcran.putExtra("modeMesure", modeMesure);
-                //startActivity(intentEcran);
-                startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);*/
                 Intent intent = new Intent(getBaseContext(),PatientSelectionActivity.class);
                 startActivity(intent);
             }
         });
 
         mtextMesures.setText(String.valueOf(mseekMesures.getProgress()));
-        mbuttonEcran.setEnabled(false);
+        //mbuttonEcran.setEnabled(false);
         //mbuttonOuvrir.setEnabled(false);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -207,29 +162,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mbuttonOuvrir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String alertMessage;
-                /*
-                String currentScore = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_SCORE, "Réaliser une mesure pour afficher le résultat");
-                String currentName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_NAME, "Test");
-                if (!currentName.equals(mEditTextNom.getText().toString())) {
-                    alertMessage = "Réaliser une mesure pour afficher le résultat";
-                } else {
-                    alertMessage = new String();
-                    for (String string : currentScore.split(" ")) {
-                        alertMessage = alertMessage + string + "\n";
-                    }
-                }
-                new AlertDialog.Builder(HomeActivity.this)
-                                .setTitle(mEditTextNom.getText().toString())
-                                .setMessage(alertMessage)
-                                .setCancelable(true).create().show();
-
-                //XmlManager.Write("testFile", arrayScore);
-                //XmlManager.Read("testFile");
-                //XmlManager.patientFiles.add(new PatientData(currentName, ,"file"));
-
-                 */
-                //XmlManager.WriteHistory();
                 Intent intent = new Intent(getBaseContext(),FilesDisplayActivity.class);
                 startActivity(intent);
             }
@@ -243,26 +175,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 startActivityForResult(intent,REQUEST_CODE_PROTOCOLE);
             }
         });
-
-        /*
-        // Nom du patient, nécessaire pour activer les boutons Ecran et Ouvrir
-        mEditTextNom.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                mbuttonEcran.setEnabled(!editable.toString().isEmpty());
-                mbuttonOuvrir.setEnabled(!editable.toString().isEmpty());
-            }
-        });*/
 
         // Nombre de mesures, déterminé par le slider
         mseekMesures.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -344,10 +256,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     private View.OnClickListener manetteListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
-                    .edit()
-                    .putString(SHARED_PREF_USER_INFO_NAME, selectedPatient.filename)
-                    .apply();
             startActivity(new Intent(HomeActivity.this, ConnecteEcran.class));
         }
     };
@@ -368,6 +276,10 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     private View.OnClickListener ecranListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            if (selectedPatient == null) {
+                noPatientDialog.show();
+                return;
+            }
             getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
                     .edit()
                     .putString(SHARED_PREF_USER_INFO_NAME, selectedPatient.filename)
@@ -377,6 +289,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             intentEcran.putExtra("modeMesure", modeMesure);
             intentEcran.putExtra("parametres", listeParametres);
             startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
+            ProtocoleActivity.DeleteProtocole();
         }
     };
 
@@ -391,25 +304,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // L'activité VrActivity s'est terminée et renvoie les résultats de la mesure
-        if (requestCode == REQUEST_CODE_ECRAN_ACTIVITY && resultCode == RESULT_OK && data != null) {
-            Log.i(TAG, "Received result from Ecran");
-            // Ajout des scores au fichier de préférences
-
-            arrayScore =(ArrayList<Float>)  data.getSerializableExtra(VrActivity.RESULT_SCORE);
-            String score = arrayScore.stream().map(Object::toString).collect(Collectors.joining(", "));
-
-            if (selectedPatient == null) return;
-
-            boolean isSimpleVVS = mtoggleSimple.isChecked();
-            Measurement.StartMeasurementSeries();
-            Measurement.AddMeasurementToSeries(isSimpleVVS, arrayScore, arrayScore);
-            Measurement.EndMeasurementSeries();
-
-
-        }
         // Le bluetooth a été activé
-        else if (REQUEST_ENABLE_BT == requestCode && RESULT_OK == resultCode) {
+        if (REQUEST_ENABLE_BT == requestCode && RESULT_OK == resultCode) {
             Log.d(TAG, "Bluetooth enabled");
             // Attribution des Listener aux boutons Manette et Ecran
             mbuttonManette.setOnClickListener(manetteListener);
@@ -491,5 +387,18 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 this.command = new String((byte[]) param1Message.obj);
             }
         }
+    }
+
+    AlertDialog CreateNoPatientAlertMessage() {
+        AlertDialog.Builder builder =  new AlertDialog.Builder(this);
+        builder.setMessage("Veuillez sélectionner un patient avant de lancer une mesure")
+                //.setCancelable(true)
+                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        Log.d("dialog", "created");
+        return builder.create();
     }
 }

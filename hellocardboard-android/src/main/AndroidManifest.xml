@@ -22,9 +22,6 @@
             android:name=".FilesDisplayActivity"
             android:exported="false" />
         <activity
-            android:name=".PlaceholderActivity"
-            android:exported="false" />
-        <activity
             android:name=".ProtocoleActivity"
             android:exported="false" />
         <activity

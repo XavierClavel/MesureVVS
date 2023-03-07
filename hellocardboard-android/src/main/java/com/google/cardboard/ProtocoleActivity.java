@@ -31,8 +31,8 @@ public class ProtocoleActivity extends AppCompatActivity {
     private Button addSerieButton;
     private Button ValideButton;
     private int serieCount = 0;
-    ArrayList<ParameterSeries> listeParametres = new ArrayList<ParameterSeries>();
-    ArrayList<View> listeView = new ArrayList<View>();
+    static ArrayList<ParameterSeries> listeParametres = new ArrayList<ParameterSeries>();
+    static ArrayList<View> listeView = new ArrayList<View>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,13 +122,10 @@ public class ProtocoleActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
 
@@ -226,5 +223,10 @@ public class ProtocoleActivity extends AppCompatActivity {
             }
         }
         return null;
+    }
+
+    public static void DeleteProtocole() {
+        listeParametres = new ArrayList<>();
+        listeView = new ArrayList<>();
     }
 }

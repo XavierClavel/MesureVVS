@@ -169,32 +169,6 @@
         android:layout_below="@id/openusrdata"
         android:text="Exporter en CSV" />
 
-    <TextView
-        android:id="@+id/debug"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/button_export"
-        android:gravity="center"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
-        android:text="Debug"
-        android:textSize="20sp" />
-
-    <Button
-        android:id="@+id/deleteEverything"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/fakeVVS"
-        android:text="erase index" />
-
-    <Button
-        android:id="@+id/fakeVVS"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/debug"
-        android:text="fake vvs" />
-
-
     <Button
         android:id="@+id/protocole"
         android:layout_width="fill_parent"

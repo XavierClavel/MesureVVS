@@ -9,8 +9,8 @@ import java.util.HashMap;
 public class Measurement {
     public String date;
     public Boolean isSimpleVVS;
-    public ArrayList<Float> valuesLeft;
-    public ArrayList<Float> valuesRight;
+    public ArrayList<Float> valuesLeft = new ArrayList<>();
+    public ArrayList<Float> valuesRight = new ArrayList<>();
     public ArrayList<Float> values;
 
     public String mean;
@@ -30,7 +30,9 @@ public class Measurement {
         VVSTypeToMeasurement = null;
     }
 
-    public static void AddMeasurementToSeries(boolean VVSType, ArrayList<Float> valuesLeft, ArrayList<Float> valuesRight) {
+    public static void AddMeasurementToSeries(boolean VVSType, boolean rotationRight,ArrayList<Float> values) {
+        ArrayList<Float> valuesLeft = !rotationRight ? values : new ArrayList<>();
+        ArrayList<Float> valuesRight = rotationRight ? values : new ArrayList<>();
         if (VVSTypeToMeasurement.containsKey(VVSType)) VVSTypeToMeasurement.get(VVSType).AddValues(valuesLeft, valuesRight);
         else VVSTypeToMeasurement.put(VVSType,new Measurement(null,VVSType,valuesLeft, valuesRight, HomeActivity.selectedPatient));
     }
@@ -53,13 +55,18 @@ public class Measurement {
     }
 
     public void AddValues(ArrayList<Float> valuesLeft, ArrayList<Float> valuesRight) {
-        for (Float f : valuesLeft) {
-            values.add(f);
-            this.valuesLeft.add(f);
+        if (valuesLeft != null) {
+            for (Float f : valuesLeft) {
+                values.add(f);
+                this.valuesLeft.add(f);
+            }
         }
-        for (Float f : valuesRight) {
-            values.add(f);
-            this.valuesRight.add(f);
+
+        if (valuesRight != null) {
+            for (Float f : valuesRight) {
+                values.add(f);
+                this.valuesRight.add(f);
+            }
         }
 
 
@@ -78,6 +85,7 @@ public class Measurement {
 
     public void AddMeasurement() {
         date = displayTime();
+        if (valuesLeft.isEmpty() && valuesRight.isEmpty()) return;
 
         String measurementsFile = HomeActivity.selectedPatient.getMeasurementsFile();
         ArrayList<Measurement> values = XmlManager.ReadMeasurements(measurementsFile, patient);
@@ -87,7 +95,7 @@ public class Measurement {
 
     static String displayTime() {
         String day = Integer.toString(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-        String month = Integer.toString(Calendar.getInstance().get(Calendar.MONTH));
+        String month = Integer.toString(Calendar.getInstance().get(Calendar.MONTH) + 1);
         String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
         return day + "/" + month + "/" + year;
     }

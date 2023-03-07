@@ -5,9 +5,9 @@ import android.os.Parcelable;
 
 public class ParameterSeries implements Parcelable {
     private int nbMesures;
-    private int sensBarre;
+    private int sensBarre;  //1 gauche, 0 droit
     private int sensFond;
-    private int mode;
+    private int mode;   //1 dynamique, 0 simple
     private float vitesseFond;
 
     public ParameterSeries(int nbMesures, int mode, int sensBarre, int sensFond, float vitesseFond) {
