@@ -106,8 +106,10 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   private ArrayList<Float> mScore = new ArrayList<Float>();
 
   private ArrayList<ArrayList<Float>> scores = new ArrayList<>();
+  private ArrayList<Float> totalScore = new ArrayList<>();
 
   private List<String> mControlsArrayAdapter;
+  boolean measuring = false;
 
 
 
@@ -153,7 +155,8 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   public void onCreate(Bundle savedInstance) {
     super.onCreate(savedInstance);
     Log.i("InputStream","ENtrée dans VrActivity");
-
+    Measurement.StartMeasurementSeries();
+    totalScore = new ArrayList<>();
     nativeApp = nativeOnCreate(getAssets());
 
     setContentView(R.layout.activity_vr);
@@ -291,6 +294,8 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   Gestion de la fin de la mesure, communication du score à HomeActivity
    */
   private void endMesure() {
+    measuring = false;
+    Measurement.EndMeasurementSeries();
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     String message = "mesures enregistrées :\n";
     for (int i = 0; i<scores.size(); i++) {
@@ -300,7 +305,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
       message = message + strScore + "\n";
     }
     builder.setTitle("Mesure Terminée")
-            .setMessage(message)
+            .setMessage("Votre score est de :" + totalScore)
             .setCancelable(false)
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
               @Override
@@ -348,35 +353,42 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
             tourne = 0;
           } else if (command.equals(new String(HomeActivity.byte_t))) {
             mScore.add(mAngle);
+            totalScore.add(mAngle);
             if (mesure_restantes > 0) {
               Log.d(TAG, "nb mesures restantes : " + String.valueOf(mesure_restantes + "  ; nb series restantes : " + nb_series_restantes));
               mesure_restantes--;
               tourne = 10;
-            } else if (nb_series_restantes > 0) {
-              scores.add((ArrayList<Float>) mScore.clone());
-              mScore.clear();
-              nb_series_restantes--;
-              num_serie++;
-              Log.d(TAG, "nb séries restantes : " + String.valueOf(nb_series_restantes));
-              ParameterSeries param_serie = listeParametres.get(num_serie);
-              mode_mesure = param_serie.getMode();
-              mesure_restantes = param_serie.getNbMesures();
-              sens_barre = param_serie.getSensBarre();
-              sens_fond = param_serie.getSensFond();
-              vitesseFond = param_serie.getVitesseFond();
-              mesure_restantes--;
-              Log.i(TAG, "nb mesures restantes: " + String.valueOf(mesure_restantes) + " ; mode: " + String.valueOf(mode_mesure) + " ; barre: " +
-                      String.valueOf(sens_barre) + " ; fond: " + String.valueOf(sens_fond));
-              tourne = 10;
-
-
             } else {
-              fini = true;
-              scores.add((ArrayList<Float>) mScore.clone());
-              //String strScore = mScore.stream().map(Object::toString).collect(Collectors.joining(", "));
-              String strScores = scores.stream().map(Object::toString).collect(Collectors.joining(", "));
-              VrActivity.this.service.write(strScores.getBytes(StandardCharsets.UTF_8));
-              endMesure();
+
+              Log.d("série achevée, type de VVS", Boolean.toString(mode_mesure==0));
+              Measurement.AddMeasurementToSeries(mode_mesure == 0,sens_barre == 0,mScore);
+              mScore = new ArrayList<>();
+              if (nb_series_restantes > 0) {
+                //scores.add((ArrayList<Float>) mScore.clone());
+                //mScore.clear();
+                nb_series_restantes--;
+                num_serie++;
+                Log.d(TAG, "nb séries restantes : " + String.valueOf(nb_series_restantes));
+                ParameterSeries param_serie = listeParametres.get(num_serie);
+                mode_mesure = param_serie.getMode();
+                mesure_restantes = param_serie.getNbMesures();
+                sens_barre = param_serie.getSensBarre();
+                sens_fond = param_serie.getSensFond();
+                vitesseFond = param_serie.getVitesseFond();
+                mesure_restantes--;
+                Log.i(TAG, "nb mesures restantes: " + String.valueOf(mesure_restantes) + " ; mode: " + String.valueOf(mode_mesure) + " ; barre: " +
+                        String.valueOf(sens_barre) + " ; fond: " + String.valueOf(sens_fond));
+                tourne = 10;
+
+
+              } else {
+                fini = true;
+                scores.add((ArrayList<Float>) mScore.clone());
+                //String strScore = mScore.stream().map(Object::toString).collect(Collectors.joining(", "));
+                String strScores = scores.stream().map(Object::toString).collect(Collectors.joining(", "));
+                VrActivity.this.service.write(strScores.getBytes(StandardCharsets.UTF_8));
+                endMesure();
+              }
             }
           } else {
             Log.i("Ecran: HandleMessage", "unknown byte" + command + ", " + new String(HomeActivity.byte_g));
