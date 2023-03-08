@@ -127,7 +127,7 @@ public class PatientCreationActivity extends AppCompatActivity {
 
     AlertDialog CreateAlertMessage() {
         AlertDialog.Builder builder =  new AlertDialog.Builder(this);
-        builder.setMessage("Veuillez à remplir tous les champs avant de finaliser la création du patient")
+        builder.setMessage("Please fill all mandatory fields to create patient file")
                 //.setCancelable(true)
                 .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

@@ -16,21 +16,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapWords"
-            android:hint="Nom"/>
+            android:hint="Last Name"/>
 
         <EditText
             android:id="@+id/patientCreation_firstName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapWords"
-            android:hint="Prénom"/>
+            android:hint="First Name"/>
 
 
         <EditText
             android:id="@+id/patientCreation_age"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Année de naissance"
+            android:hint="Birth Year"
             android:inputType="number"/>
 
         <TextView
@@ -67,13 +67,13 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:height="300dp"
-            android:hint="Commentaire (Optionnel)"/>
+            android:hint="Comment (Optional)"/>
 
         <Button
             android:id="@+id/patientCreation_done"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="done" />
+            android:text="validate" />
 
     </LinearLayout>
 </RelativeLayout>

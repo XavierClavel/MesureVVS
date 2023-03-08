@@ -98,7 +98,7 @@ public class ProtocoleActivity extends AppCompatActivity {
 
 
         serieCount++;
-        serieTitle.setText("Série " + serieCount);
+        serieTitle.setText("Serie " + serieCount);
         //bouton pour supprimer la série
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,10 +137,10 @@ public class ProtocoleActivity extends AppCompatActivity {
                 ParameterSeries para = listeParametres.get(position);
                 if (para.getMode() ==0) {
                     para.setmode(1);
-                    modeButton.setText("VVS Dynamique");
+                    modeButton.setText("Dynamic VVS");
                 } else {
                     para.setmode(0);
-                    modeButton.setText("VVS Simple");
+                    modeButton.setText("Simple VVS");
                 }
                 Log.i(TAG, "changement du mode : mode " + String.valueOf(para.getMode()));
             }
@@ -154,10 +154,10 @@ public class ProtocoleActivity extends AppCompatActivity {
                 ParameterSeries para = listeParametres.get(position);
                 if (para.getSensBarre() ==0) {
                     para.setSensBarre(1);
-                    barreButton.setText("gauche");
+                    barreButton.setText("Left");
                 } else {
                     para.setSensBarre(0);
-                    barreButton.setText("droite");
+                    barreButton.setText("Right");
                 }
                 Log.i(TAG, "changement du sens de la barre : sens de la barre " + String.valueOf(para.getSensBarre()));
             }
@@ -171,10 +171,10 @@ public class ProtocoleActivity extends AppCompatActivity {
                 ParameterSeries para = listeParametres.get(position);
                 if (para.getSensFond() ==-1) {
                     para.setsensFond(1);
-                    fondButton.setText("droite");
+                    fondButton.setText("Right");
                 } else {
                     para.setsensFond(-1);
-                    fondButton.setText("gauche");
+                    fondButton.setText("Left");
                 }
                 Log.i(TAG, "changement du sens du fond : sens " + String.valueOf(para.getSensFond()));
             }

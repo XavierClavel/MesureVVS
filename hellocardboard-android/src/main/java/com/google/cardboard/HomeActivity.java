@@ -346,7 +346,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
 
     AlertDialog CreateNoPatientAlertMessage() {
         AlertDialog.Builder builder =  new AlertDialog.Builder(this);
-        builder.setMessage("Veuillez sélectionner un patient avant de lancer une mesure")
+        builder.setMessage("Please select a patient before starting a measurement")
                 //.setCancelable(true)
                 .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

@@ -104,8 +104,8 @@ public class FilesDisplayActivity extends AppCompatActivity {
 
         Button button = new Button(this);
         //button.setLayoutParams(buttonParam);
-        button.setText("Afficher");
-        button.setMinimumWidth(500);
+        button.setText("Display");
+        button.setMinimumWidth(700);
         button.setGravity(Gravity.CENTER);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,7 +119,7 @@ public class FilesDisplayActivity extends AppCompatActivity {
         LinearLayout buttonLayout = new LinearLayout(this);
         buttonLayout.setLayoutParams(buttonParam);
         buttonLayout.setGravity(Gravity.RIGHT);
-        buttonLayout.setMinimumWidth(500);
+        buttonLayout.setMinimumWidth(600);
 
         layout1.addView(buttonLayout);
         buttonLayout.addView(button);

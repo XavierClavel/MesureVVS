@@ -18,12 +18,12 @@
     </ScrollView>
     <Button
         android:id="@+id/ValideButton"
-        android:text="Valider"
+        android:text="Validate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <Button
         android:id="@+id/addSerieButton"
-        android:text="Ajouter une série"
+        android:text="Add new serie"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

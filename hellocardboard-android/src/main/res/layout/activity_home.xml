@@ -17,7 +17,7 @@
         android:gravity="center"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
-        android:text="Sélection du patient"
+        android:text="Patient selection"
         android:textSize="20sp" />
 
     <LinearLayout
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/placeholderText"
             android:layout_weight="1"
-            android:text="sélectionner" />
+            android:text="select patient" />
 
     </LinearLayout>
 
@@ -79,7 +79,7 @@
         android:gravity="center"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
-        android:text="Rôle du téléphone"
+        android:text="Role of the smartphone"
         android:textSize="20sp" />
 <!--
     <LinearLayout
@@ -151,7 +151,7 @@
         android:gravity="center"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
-        android:text="Fiches patient"
+        android:text="Patient files"
         android:textSize="20sp" />
     <!--android:layout_below="@id/ecran"-->
 
@@ -160,14 +160,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvfichepatient"
-        android:text="Ouvrir" />
+        android:text="open" />
 
     <Button
         android:id="@+id/button_export"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/openusrdata"
-        android:text="Exporter en CSV" />
+        android:text="CSV export" />
 
     <Button
         android:id="@+id/protocole"

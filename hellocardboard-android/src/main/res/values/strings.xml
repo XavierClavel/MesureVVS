@@ -25,8 +25,8 @@
     <string name="title_paired_devices">Paired Devices</string>
     <string name="button_connect">Connect to device</string>
     <string name="button_scan">Scan for devices</string>
-    <string name="btn_manette">Manette</string>
-    <string name="btn_ecran">Ecran</string>
+    <string name="btn_manette">Remote</string>
+    <string name="btn_ecran">Screen</string>
     <string name="display_result">Result=</string>
     <string name="btn_stop">Stop</string>
     <string name="btn_result">result</string>

@@ -32,7 +32,7 @@ public class CsvManager {
                     WriteCSV(patientData, measurements, true);
                     WriteCSV(patientData, measurements, false);
                 }
-                Toast.makeText(HomeActivity.instance, "Export au format CSV terminé", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.instance, "CSV export completed", Toast.LENGTH_LONG).show();
             }
         };
         runnable.run();
@@ -118,7 +118,7 @@ public class CsvManager {
 
 
         line= new ArrayList<>();
-        line.add("Nom");
+        line.add("Last name");
         for (int i = 0; i<size; i++) {
             if (measurements.get(i).valuesRight.size() != 0) line.add(patientData.lastName);
             if (measurements.get(i).valuesLeft.size() != 0) line.add(patientData.lastName);
@@ -128,7 +128,7 @@ public class CsvManager {
         data.add(lineArray);
 
         line= new ArrayList<>();
-        line.add("Prénom");
+        line.add("First name");
         for (int i = 0; i<size; i++) {
 
             if (measurements.get(i).valuesRight.size() != 0) line.add(patientData.firstName);
@@ -159,20 +159,20 @@ public class CsvManager {
         data.add(lineArray);
 
         line= new ArrayList<>();
-        line.add("Type de VVS");
+        line.add("SVV Type");
         for (int i = 0; i<size; i++) {
-            if (measurements.get(i).valuesRight.size() != 0) line.add(measurements.get(i).isSimpleVVS ? "VVS Simple" : "VVS Dynamique");
-            if (measurements.get(i).valuesLeft.size() != 0) line.add(measurements.get(i).isSimpleVVS ? "VVS Simple" : "VVS Dynamique");
+            if (measurements.get(i).valuesRight.size() != 0) line.add(measurements.get(i).isSimpleVVS ? "Simple SVV" : "Dynamic SVV");
+            if (measurements.get(i).valuesLeft.size() != 0) line.add(measurements.get(i).isSimpleVVS ? "Simple SVV" : "Dynamic SVV");
         }
         lineArray = new String[line.size()];
         line.toArray(lineArray);
         data.add(lineArray);
 
         line= new ArrayList<>();
-        line.add("Sens de rotation");
+        line.add("Direction of rotation");
         for (int i = 0; i<size; i++) {
-            if (measurements.get(i).valuesRight.size() != 0) line.add("Droite");
-            if (measurements.get(i).valuesLeft.size() != 0) line.add("Gauche");
+            if (measurements.get(i).valuesRight.size() != 0) line.add("Clockwise");
+            if (measurements.get(i).valuesLeft.size() != 0) line.add("Counterclockwise");
         }
         lineArray = new String[line.size()];
         line.toArray(lineArray);
@@ -182,7 +182,7 @@ public class CsvManager {
         int maxLength = getMaxLengthRightLeft(measurements);
         for (int j = 0; j < maxLength; j++) {
             line= new ArrayList<>();
-            line.add(j == 0 ? "Valeurs" : null);
+            line.add(j == 0 ? "Values" : null);
             for (int i = 0; i < size; i++) {
                 Measurement measurement = measurements.get(i);
                 if (measurements.get(i).valuesRight.size() != 0) {
@@ -245,14 +245,14 @@ public class CsvManager {
         data.add(line);
 
         line = new String[size+1];
-        line[0] = "Nom";
+        line[0] = "Last name";
         for (int i = 0; i<size; i++) {
             line[i+1] = patientData.lastName;
         }
         data.add(line);
 
         line = new String[size+1];
-        line[0] = "Prénom";
+        line[0] = "First name";
         for (int i = 0; i<size; i++) {
             line[i+1] = patientData.firstName;
         }
@@ -274,35 +274,35 @@ public class CsvManager {
         data.add(line);
 
         line = new String[size+1];
-        line[0] = "Type de VVS";
+        line[0] = "SVV Type";
         for (int i = 0; i<size; i++) {
-            line[i+1] = measurements.get(i).isSimpleVVS ? "VVS Simple" : "VVS Dynamique";
+            line[i+1] = measurements.get(i).isSimpleVVS ? "Simple SVV" : "Dynamic SVV";
         }
         data.add(line);
 
         line = new String[size+1];
-        line[0] = "Nb mesures avec rotation à gauche";
+        line[0] = "Amount of counterclockwise measurements";
         for (int i = 0; i<size; i++) {
             line[i+1] = Integer.toString(measurements.get(i).valuesLeft.size());
         }
         data.add(line);
 
         line = new String[size+1];
-        line[0] = "Nb mesures avec rotation à droite";
+        line[0] = "Amount of clockwise measurements";
         for (int i = 0; i<size; i++) {
             line[i+1] = Integer.toString(measurements.get(i).valuesRight.size());
         }
         data.add(line);
 
         line = new String[size+1];
-        line[0] = "Moyenne";
+        line[0] = "Mean";
         for (int i = 0; i<size; i++) {
             line[i+1] = measurements.get(i).mean;
         }
         data.add(line);
 
         line = new String[size+1];
-        line[0] = "Ecart-type";
+        line[0] = "Standard Deviation";
         for (int i = 0; i<size; i++) {
             line[i+1] = measurements.get(i).standardDeviation;
         }
