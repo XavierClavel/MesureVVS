@@ -46,13 +46,35 @@ public class CsvManager {
         ArrayList<String[]> data;
         data = raw ? FormatRawData(patientData,measurements) : FormatData(patientData, measurements);
 
-        String folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/VVS";
+        String folderPath;
+
+        File documentFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString());
+        if (documentFile.exists()) {
+            folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/VVS";
+        } else {
+            folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/VVS";
+        }
 
         File projDir = new File(folderPath);
         if (!projDir.exists())
             projDir.mkdirs();   //create folder if it does not exist
+        if (!projDir.exists()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+                folderPath = HomeActivity.instance.getExternalFilesDir(Environment.DIRECTORY_DCIM) + "/VVS";
+            }
+            else
+            {
+                folderPath = Environment.getExternalStorageDirectory().toString() + "/VVS";
+            }
+            projDir = new File(folderPath);
+            if (!projDir.exists())
+                projDir.mkdirs();   //create folder if it does not exist
+        }
+
+        Log.d("exists",Boolean.toString(projDir.exists()));
 
         String csv = folderPath + "/" + filename + ".csv";
+        Log.d("csv",csv);
 
         File file= new File(csv);
         if (!file.exists()) {
@@ -61,7 +83,6 @@ public class CsvManager {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
 
         Log.d("path", csv);
