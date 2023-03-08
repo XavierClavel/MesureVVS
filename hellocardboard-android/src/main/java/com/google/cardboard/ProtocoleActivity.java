@@ -134,14 +134,15 @@ public class ProtocoleActivity extends AppCompatActivity {
         Button fondButton = serieView.findViewById(R.id.fondButton);
         Button modeButton = serieView.findViewById(R.id.modeButton);
         Button deleteButton = serieView.findViewById(R.id.deleteButton);
-        TextView mtextMesures = findViewById(R.id.tvNbMesures);
-        EditText champVitesseFond = findViewById(R.id.vitesseFond);
         Button validationVitesseFondButton = serieView.findViewById(R.id.validationVitesse);
+        //EditText champVitesseFond = findViewById(R.id.vitesseFond);
+        //TextView mtextMesures = findViewById(R.id.tvNbMesures);
+        EditText champVitesseFond = getEditText(serieView);
+        TextView mtextMesures = (TextView) ((LinearLayout)(((LinearLayout) serieView).getChildAt(0))).getChildAt(2);
 
         //initialisation des boutons aux bonnes valeurs
         mesuresSeekBar.setProgress(nbMesures);
-        //TextView textMesure = (TextView) ((LinearLayout)(((LinearLayout) serieView).getChildAt(0))).getChildAt(2);
-        mtextMesures.setText("nbMesures");
+        mtextMesures.setText(Integer.toString(nbMesures));
         if (mode ==1) {
             modeButton.setText("VVS Dynamique");
         } else {
@@ -157,8 +158,10 @@ public class ProtocoleActivity extends AppCompatActivity {
         } else {
             barreButton.setText("anti-horaire");
         }
+        Log.d(TAG, "vitesse : " + vitesseFond);
         champVitesseFond.setText(Float.toString(vitesseFond));
 
+        //champVitesseFond.setText("test");
 
 
         serieCount++;
@@ -254,7 +257,7 @@ public class ProtocoleActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int position = getPositionById(serieView);
                 ParameterSeries para = listeParametres.get(position);//2.2.1.0
-                EditText champVitesse = (EditText) ((LinearLayout) ((LinearLayout) ((LinearLayout)(((LinearLayout) serieView).getChildAt(2))).getChildAt(2)).getChildAt(1)).getChildAt(0);
+                EditText champVitesse = getEditText(serieView);
                 String s = String.valueOf(champVitesse.getText());
                 try {
                     para.setVitesseFond(Float.parseFloat(s));
@@ -293,9 +296,18 @@ public class ProtocoleActivity extends AppCompatActivity {
         return null;
     }
 
+    //obtenir la référence de champs contenant la vitesse du fond de la série
+    private EditText getEditText(View serieView) {
+        return (EditText) ((LinearLayout) ((LinearLayout) ((LinearLayout)(((LinearLayout) serieView).getChildAt(2))).getChildAt(2)).getChildAt(1)).getChildAt(0); //2.2.1.0
+    }
+
+
+
+    //on ne doit pas pouvoir valider un protocole vide de série de mesure
     private void check_not_empty() {
         if (listeParametres.size() < 1) {
             ValideButton.setEnabled(false);
         }
     }
 }
+
