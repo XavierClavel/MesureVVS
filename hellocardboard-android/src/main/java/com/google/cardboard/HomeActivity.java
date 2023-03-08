@@ -117,10 +117,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mbuttonEcran = findViewById(R.id.ecran);
         mbuttonOuvrir = findViewById(R.id.openusrdata);
         mbuttonProtocole = findViewById(R.id.protocole);
-        mseekMesures = findViewById(R.id.sbNbMesures);
         mtextMesures = findViewById(R.id.tvNbMesures);
-        mtoggleSimple = findViewById(R.id.tbSimple);
-        mtoggleDynamique = findViewById(R.id.tbDynamique);
         patientNameDisplay = findViewById(R.id.patientId);
 
         //mseekMesures.setProgress(nbMeasure);
@@ -146,7 +143,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             }
         });
 
-        mtextMesures.setText(String.valueOf(mseekMesures.getProgress()));
         //mbuttonEcran.setEnabled(false);
         //mbuttonOuvrir.setEnabled(false);
 
@@ -176,46 +172,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             }
         });
 
-        // Nombre de mesures, déterminé par le slider
-        mseekMesures.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mtextMesures.setText(String.valueOf(progress));
-            }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        // VVS simple
-        mtoggleSimple.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    modeMesure = 0;
-                    mtoggleDynamique.setChecked(false);
-                }
-            }
-        });
-
-        // VVS dynamique
-        mtoggleDynamique.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    modeMesure = 1;
-                    mtoggleSimple.setChecked(false);
-                    Log.i("ModeDynamique", "ENTREE DANS UNE MESURE DYNAMIQUE");
-                }
-            }
-        });
     }
 
     AlertDialog CreateAlertMessage() {
@@ -285,8 +242,6 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                     .putString(SHARED_PREF_USER_INFO_NAME, selectedPatient.filename)
                     .apply();
             Intent intentEcran = new Intent((Context) getBaseContext(), VrActivity.class);
-            intentEcran.putExtra("nbMesures", Integer.parseInt(mtextMesures.getText().toString()));
-            intentEcran.putExtra("modeMesure", modeMesure);
             intentEcran.putExtra("parametres", listeParametres);
             startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
             ProtocoleActivity.DeleteProtocole();

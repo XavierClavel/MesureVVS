@@ -104,6 +104,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   private ArrayList<Float> totalScore = new ArrayList<>();
 
   private List<String> mControlsArrayAdapter;
+  boolean measuring = false;
 
 
 
@@ -146,6 +147,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   @Override
   public void onCreate(Bundle savedInstance) {
     super.onCreate(savedInstance);
+    measuring = true;
     Log.i("InputStream","ENtrée dans VrActivity");
 
     Measurement.StartMeasurementSeries();
@@ -207,8 +209,8 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
       mesure_restantes --;
     } else {  //cas où le protocole n'est pas utilisé, auquel cas on utilise les données de HomeActivity
       Log.d(TAG, "parametres  nuls");
-      //mode_mesure = 0;
-      //mesure_restantes = 5;
+      mode_mesure = 0;
+      mesure_restantes = 5;
       sens_barre = 0;
       sens_fond = 1;
       vitesseFond = 1;
@@ -263,6 +265,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
   Gestion de la fin de la mesure, communication du score à HomeActivity
    */
   private void endMesure() {
+    measuring = false;
     Measurement.EndMeasurementSeries();
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle("Mesure Terminée")
@@ -291,6 +294,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
     @Override
     public void handleMessage(Message param1Message) {
       super.handleMessage(param1Message);
+      if (!measuring) return;
       if (param1Message.what == 0) {
         String command = new String((byte[]) param1Message.obj, 0, param1Message.arg1);
         //La

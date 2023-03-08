@@ -193,6 +193,9 @@ void HelloCardboardApp::OnDrawFrame( int tourne, int sens_fond, int mode, float 
     return;
   }
   if (mode != current_mode) {
+    current_mode = mode;
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if (mode ==1){
       HELLOCARDBOARD_CHECK(room_tex_.Initialize(environnement, java_asset_mgr_, "dynamique2.png"));
     } else {

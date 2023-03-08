@@ -2,8 +2,10 @@ package com.google.cardboard;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 public class ParameterSeries implements Parcelable {
+    private static final String TAG = "ParameterSeries";
     private int nbMesures;
     private int sensBarre;  //1 gauche, 0 droit
     private int sensFond;
@@ -12,9 +14,9 @@ public class ParameterSeries implements Parcelable {
 
     public ParameterSeries(int nbMesures, int mode, int sensBarre, int sensFond, float vitesseFond) {
         this.nbMesures = nbMesures;
-        this.sensBarre = sensBarre;
-        this.sensFond = sensFond;
-        this.mode = mode;
+        this.sensBarre = sensBarre; //0 = droite (sens horaire) ; 1 = gauche (sens antihoraire)
+        this.sensFond = sensFond; //0 = droite (sens horaire) ; 1 = gauche (sens antihoraire)
+        this.mode = mode; //0 = vvs simple ; 1 = vvs dynamique
         this.vitesseFond = vitesseFond;
     }
 
@@ -91,18 +93,19 @@ public class ParameterSeries implements Parcelable {
 
     }
 
-    /*
     @Override
-    public int describeContents() {
-        return 0;
+    public String toString() {
+        return nbMesures + "l" + sensBarre + "l" + sensFond + "l" + mode + "l" + vitesseFond;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(nbMesures);
-        parcel.writeInt(sensBarre);
-        parcel.writeInt(sensFond);
-        parcel.writeInt(mode);
-        parcel.writeFloat(vitesseFond);
-    }*/
+    public static ParameterSeries fromString(String s) {
+        Log.d(TAG,s);
+        String[] parts = s.split("l");
+        int nbMesures = Integer.parseInt(parts[0]);
+        int sensBarre = Integer.parseInt(parts[1]);
+        int sensFond = Integer.parseInt(parts[2]);
+        int mode = Integer.parseInt(parts[3]);
+        float vitesseFond = Float.parseFloat(parts[4]);
+        return new ParameterSeries(nbMesures, mode, sensBarre, sensFond, vitesseFond);
+    }
 }

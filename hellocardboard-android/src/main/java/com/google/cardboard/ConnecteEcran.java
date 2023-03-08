@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -82,6 +83,28 @@ public class ConnecteEcran extends AppCompatActivity {
         // vérification que le bluetooth est disponible sur l'appareil
         if (mBtAdapter != null) {
             if (mBtAdapter.isEnabled()) {
+                //connection avec l'appareil appairee s'il y en a un:
+                Log.d("LogConnectEcran", "debutt");
+                // Récupération des informations de connexion depuis les préférences partagées
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                String address = prefs.getString("device_address", null);
+                try {
+                    if (address != null) {
+                        selected_device = mBtAdapter.getRemoteDevice(address);
+                        // Connexion automatique à l'appareil Bluetooth précédemment appairé
+                        // Utilisez les classes BluetoothSocket ou BluetoothGatt pour établir une connexion Bluetooth
+                        if (mBtAdapter.isDiscovering()) {
+                            mBtAdapter.cancelDiscovery();
+                        }
+                        Intent intent = new Intent((Context) getBaseContext(), Manette.class);
+                        intent.putExtra("mac", selected_device.getAddress());
+                        Toast.makeText(getBaseContext(), selected_device.getAddress(), Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                        finish();
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, "erreur lors de la récupération de l'adresse bluetooth enregistrée");
+                }
                 // Récupération des appareils appairés
                 Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
                 // Il existe au moins un appreil appairé
@@ -108,6 +131,14 @@ public class ConnecteEcran extends AppCompatActivity {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             selected_device = mBtAdapter.getRemoteDevice(macpaired.get(i));
+
+                                            // On stock l'adresse MAC dans les préférences partagées
+                                            String address = selected_device.getAddress();
+                                            SharedPreferences prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = prefs.edit();
+                                            editor.putString("device_address", address);
+                                            editor.apply();
+
                                             btn_connect.setEnabled(true);
                                             String txConnect = "Connect to " + selected_device.getName();
                                             btn_connect.setText(txConnect);

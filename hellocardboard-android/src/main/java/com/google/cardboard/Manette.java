@@ -1,5 +1,6 @@
 package com.google.cardboard;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.cardboard.MyBluetoothService;
 
@@ -59,9 +61,13 @@ public class Manette extends Activity {
 
     private MyBluetoothService service;
 
+    private Button reconnexionButton;
+
+    @SuppressLint("MissingInflatedId")
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_manette);
+        Button reconnexionButton = findViewById(R.id.reconnexion);
         new Message();
         // Enregistrement des paramètres de la connexion bluetooth avec l'écran et attribution du rôle de Client bluetooth
         this.service = new MyBluetoothService((Context)this, this.mHandler);
@@ -70,6 +76,7 @@ public class Manette extends Activity {
         this.service.startClient(this.selected_device, this.MY_UUID);
         IntentFilter intentFilter = new IntentFilter("RECEIVED");
         registerReceiver(this.Receiver, intentFilter);
+
         // Appuyer sur le bouton droite envoi l'instruction de rotation et le relacher envoi l'instruction d'arrêter la rotation
         (findViewById(R.id.droite)).setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -128,6 +135,16 @@ public class Manette extends Activity {
         ((Button)findViewById(R.id.result)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View param1View) {
                 Manette.this.service.write(HomeActivity.byte_t);
+            }
+        });
+
+
+        // changement du sens de rotation du fond
+        reconnexionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(Manette.this, ConnecteEcran.class));
             }
         });
     }
