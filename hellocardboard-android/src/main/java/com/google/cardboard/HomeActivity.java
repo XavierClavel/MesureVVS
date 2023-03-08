@@ -325,8 +325,8 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // L'activité VrActivity s'est terminée et renvoie les résultats de la mesure
-        if (requestCode == REQUEST_CODE_ECRAN_ACTIVITY && resultCode == RESULT_OK && data != null) {
+        // L'activité VrActivity s'est terminée et renvoie les résultats de la mesure/*
+        /*if (requestCode == REQUEST_CODE_ECRAN_ACTIVITY && resultCode == RESULT_OK && data != null) {
             //Log.i(TAG, "Received result from Ecran");
             listeParametres =  data.getParcelableArrayListExtra("listeparametres");
             // Ajout des scores au fichier de préférences
@@ -348,13 +348,12 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                     Measurement.AddMeasurementToSeries(isSimpleVVS, new ArrayList<>(), mesures);
                 }
                 Measurement.EndMeasurementSeries();
-                //TODO: stocker aussi le sens de la barre pour chaque série de mesure
             }
 
 
-        }
+        }*/
         // Le bluetooth a été activé
-        else if (REQUEST_ENABLE_BT == requestCode && RESULT_OK == resultCode) {
+        if (REQUEST_ENABLE_BT == requestCode && RESULT_OK == resultCode) {
             Log.d(TAG, "Bluetooth enabled");
             // Attribution des Listener aux boutons Manette et Ecran
             mbuttonManette.setOnClickListener(manetteListener);
