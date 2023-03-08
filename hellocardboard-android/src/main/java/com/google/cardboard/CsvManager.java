@@ -32,7 +32,7 @@ public class CsvManager {
                     WriteCSV(patientData, measurements, true);
                     WriteCSV(patientData, measurements, false);
                 }
-                Toast.makeText(HomeActivity.instance, "All measurements saved to CSV", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.instance, "Export au format CSV terminé", Toast.LENGTH_LONG).show();
             }
         };
         runnable.run();

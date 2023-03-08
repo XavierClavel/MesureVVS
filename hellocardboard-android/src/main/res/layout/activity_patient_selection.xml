@@ -23,7 +23,7 @@ android:background="#FFFFFF">
             android:id="@+id/patientCreation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="new patient" />
+            android:text="nouveau patient" />
 
         <RadioGroup
             android:id="@+id/patientList"

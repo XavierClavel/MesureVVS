@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:height="300dp"
-            android:hint="Comment (Optional)"/>
+            android:hint="Commentaire (Optionnel)"/>
 
         <Button
             android:id="@+id/patientCreation_done"

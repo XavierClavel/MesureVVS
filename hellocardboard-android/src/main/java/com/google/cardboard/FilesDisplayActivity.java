@@ -104,7 +104,7 @@ public class FilesDisplayActivity extends AppCompatActivity {
 
         Button button = new Button(this);
         //button.setLayoutParams(buttonParam);
-        button.setText("Display");
+        button.setText("Afficher");
         button.setMinimumWidth(500);
         button.setGravity(Gravity.CENTER);
         button.setOnClickListener(new View.OnClickListener() {
