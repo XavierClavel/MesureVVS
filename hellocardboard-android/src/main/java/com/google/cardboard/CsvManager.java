@@ -46,20 +46,18 @@ public class CsvManager {
         ArrayList<String[]> data;
         data = raw ? FormatRawData(patientData,measurements) : FormatData(patientData, measurements);
 
-        String csv;
+        String folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/VVS";
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
-            csv = HomeActivity.instance.getExternalFilesDir(Environment.DIRECTORY_DCIM) + "/" + filename + ".csv";
-        }
-        else
-        {
-            csv = Environment.getExternalStorageDirectory().toString() + "/" + filename + ".csv";
-        }
+        File projDir = new File(folderPath);
+        if (!projDir.exists())
+            projDir.mkdirs();   //create folder if it does not exist
 
-        File file = new File(csv);
+        String csv = folderPath + "/" + filename + ".csv";
+
+        File file= new File(csv);
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                file.createNewFile();   //create file if it does not exist
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -71,7 +69,7 @@ public class CsvManager {
         CSVWriter writer = null;
         try {
             writer = new CSVWriter(new FileWriter(csv), ',', CSVWriter.NO_QUOTE_CHARACTER);
-            writer.writeAll(data); // data is adding to csv
+            writer.writeAll(data); // write data to csv file
 
             writer.close();
             //callRead();
