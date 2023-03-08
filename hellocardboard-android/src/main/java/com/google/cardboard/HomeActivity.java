@@ -133,7 +133,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         } else mbuttonEcran.setEnabled(false);
 
         buttonExport = findViewById(R.id.button_export);
-        mbuttonfakeVVS = findViewById(R.id.fakeVVS);
+        //mbuttonfakeVVS = findViewById(R.id.fakeVVS);
         mbuttonSelectPatient = findViewById(R.id.placeholderButton); //to delete
 
         buttonExport.setOnClickListener(new View.OnClickListener() {
@@ -142,7 +142,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
                 CsvManager.WriteAllData();
             }
         });
-
+/*
         mbuttonfakeVVS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -157,14 +157,16 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
 
             }
         });
+        */
 
+/*
         findViewById(R.id.deleteEverything).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 XmlManager.EraseIndex();
             }
         });
-
+*/
 
         mbuttonSelectPatient.setOnClickListener(new View.OnClickListener() {
             @Override

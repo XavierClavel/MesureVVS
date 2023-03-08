@@ -168,7 +168,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/openusrdata"
         android:text="Exporter en CSV" />
-
+<!--
     <TextView
         android:id="@+id/debug"
         android:layout_width="match_parent"
@@ -193,7 +193,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/debug"
         android:text="fake vvs" />
-
+-->
 
     <Button
         android:id="@+id/protocole"
