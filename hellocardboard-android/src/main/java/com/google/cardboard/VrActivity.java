@@ -269,7 +269,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
     Measurement.EndMeasurementSeries();
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle("Mesure Terminée")
-            .setMessage("Votre score est de :" + totalScore)
+            .setMessage("Measured score is :" + totalScore)
             .setCancelable(false)
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
               @Override
