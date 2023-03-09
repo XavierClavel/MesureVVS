@@ -83,7 +83,7 @@
                 android:layout_marginEnd="0dp"
                 android:textStyle="bold"
                 android:textSize="16dp"
-                android:text="Genre : " />
+                android:text="Gender : " />
 
             <TextView
                 android:id="@+id/genreDisplay"

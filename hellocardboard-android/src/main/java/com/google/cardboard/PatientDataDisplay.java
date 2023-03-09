@@ -157,15 +157,15 @@ public class PatientDataDisplay extends AppCompatActivity {
          */
 
         valueDisplay = new TextView(this);
-        valueDisplay.setText("Nombre de mesures avec une rotation à gauche : " + measurement.valuesLeft.size());
+        valueDisplay.setText("Amount of measurements with left rotation : " + measurement.valuesLeft.size());
         measurementsDisplay.addView(valueDisplay);
 
         valueDisplay = new TextView(this);
-        valueDisplay.setText("Nombre de mesures avec une rotation à droite : " + measurement.valuesRight.size());
+        valueDisplay.setText("Amount of measurements with right rotation : " + measurement.valuesRight.size());
         measurementsDisplay.addView(valueDisplay);
 
         valueDisplay = new TextView(this);
-        valueDisplay.setText("Moyenne : " + measurement.mean);
+        valueDisplay.setText("Mean : " + measurement.mean);
         measurementsDisplay.addView(valueDisplay);
 
         valueDisplay = new TextView(this);
@@ -173,7 +173,7 @@ public class PatientDataDisplay extends AppCompatActivity {
         measurementsDisplay.addView(valueDisplay);
 
         valueDisplay = new TextView(this);
-        valueDisplay.setText("Ecart-type : " + measurement.standardDeviation);
+        valueDisplay.setText("Standard Deviation : " + measurement.standardDeviation);
         measurementsDisplay.addView(valueDisplay);
 
     }

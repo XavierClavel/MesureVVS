@@ -149,7 +149,7 @@ public class CsvManager {
         data.add(lineArray);
 
         line= new ArrayList<>();
-        line.add("Genre");
+        line.add("Gender");
         for (int i = 0; i<size; i++) {
             if (measurements.get(i).valuesRight.size() != 0) line.add(patientData.getGenreString());
             if (measurements.get(i).valuesLeft.size() != 0) line.add(patientData.getGenreString());
@@ -267,7 +267,7 @@ public class CsvManager {
         data.add(line);
 
         line = new String[size+1];
-        line[0] = "Genre";
+        line[0] = "Gender";
         for (int i = 0; i<size; i++) {
             line[i+1] = patientData.getGenreString();
         }
