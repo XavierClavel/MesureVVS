@@ -84,7 +84,7 @@ public class ConnecteEcran extends AppCompatActivity {
         if (mBtAdapter != null) {
             if (mBtAdapter.isEnabled()) {
                 //connection avec l'appareil appairee s'il y en a un:
-                Log.d("LogConnectEcran", "debutt");
+                Log.d("LogConnectEcran", "debut");
                 // Récupération des informations de connexion depuis les préférences partagées
                 SharedPreferences prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
                 String address = prefs.getString("device_address", null);
