@@ -261,7 +261,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
             Intent intentEcran = new Intent((Context) getBaseContext(), VrActivity.class);
             intentEcran.putExtra("parametres", listeParametres);
             startActivityForResult(intentEcran, REQUEST_CODE_ECRAN_ACTIVITY);
-            ProtocoleActivity.DeleteProtocole();
+            //ProtocoleActivity.DeleteProtocole();
         }
     };
 
