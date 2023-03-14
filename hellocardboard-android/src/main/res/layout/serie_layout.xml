@@ -25,7 +25,7 @@
         <Button
             android:id="@+id/modeButton"
             style="@android:style/Widget.DeviceDefault.Button.Toggle"
-            android:text="Simple VVS"
+            android:text="Simple SVV"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
