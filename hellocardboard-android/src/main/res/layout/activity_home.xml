@@ -180,7 +180,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/selectLayout"
-        android:text="Protocole" />
+        android:text="Protocol" />
 
     <!--    <Button
             android:id="@+id/tutoriel"
