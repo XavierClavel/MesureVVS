@@ -191,6 +191,41 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
     } else {
       mode_mesure = 0;
     }
+    
+    // Récupération des SharedPreferences
+    Log.i(TAG, "récupération des paramètres enregistrés dans les préférences partagées");
+    SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+    String listString = sharedPreferences.getString("parameters_list", "");
+    listeParametres = new ArrayList<>();
+    try {
+      if (!listString.isEmpty()) {
+        // Convertion de la chaîne de caractères en liste
+        String[] listArray = listString.split("ll");
+        //for (int i = 0; i < min(listArray.length, 10); i++) {
+        for (int i = 0; i < listArray.length; i++) {
+          ParameterSeries parameter = ParameterSeries.fromString(listArray[i]);
+          listeParametres.add(parameter);
+        }
+
+      }
+    } catch (Exception e) {
+      Log.d("TAG", "pb avec la récupération des paramètres sauvegardés");
+    }
+    //paramètres arbitraires si il n'y a pas de paramètres enregistrés
+    if (listeParametres.size()==0) {
+      Log.d(TAG, "pas de paramètres enregistrés");
+      listeParametres.add(new ParameterSeries(5,0,1,1,1));
+    }
+    nb_series_restantes = listeParametres.size();num_serie = 0;
+    ParameterSeries param_serie = listeParametres.get(num_serie);
+    mode_mesure = param_serie.getMode();
+    mesure_restantes = param_serie.getNbMesures();
+    sens_barre = param_serie.getSensBarre();
+    sens_fond = param_serie.getSensFond();
+    vitesseFond = param_serie.getVitesseFond();
+    nb_series_restantes--;
+    mesure_restantes --;
+  /*
     //Gestion des paramètres transmis. Si non reception, VVS statique 5 mesures droite droite
     if (new Integer(getIntent().getExtras().getInt("parametres")) != null){
       Log.d(TAG, "parametres non nuls");
@@ -214,7 +249,7 @@ public class VrActivity extends AppCompatActivity implements PopupMenu.OnMenuIte
       sens_barre = 0;
       sens_fond = 1;
       vitesseFond = 1;
-    }
+    }*/
     Log.i("VRACTIVITY", " mode : " + String.valueOf(mode_mesure));
 
     //Gestion de la VR
