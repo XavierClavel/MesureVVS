@@ -59,6 +59,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/manette"
         android:text="@string/btn_ecran" />
+    <Button
+        android:id="@+id/bluetooth_reset"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ecran"
+        android:text="@string/bluetooth_reset" />
 
     <TextView
         android:id="@+id/tvParametres"
@@ -147,7 +153,7 @@
         android:id="@+id/tvfichepatient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ecran"
+        android:layout_below="@id/bluetooth_reset"
         android:gravity="center"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
