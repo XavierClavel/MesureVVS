@@ -67,6 +67,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
 
     Button mbuttonManette;
     Button mbuttonEcran;
+    Button mbuttonBluetoothReset;
     Button mbuttonOuvrir;
     Button mbuttonProtocole;
     SeekBar mseekMesures;
@@ -115,6 +116,7 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mbuttonManette = findViewById(R.id.manette);
         //mbuttonTutoriel = findViewById(R.id.tutoriel);
         mbuttonEcran = findViewById(R.id.ecran);
+        mbuttonBluetoothReset = findViewById(R.id.bluetooth_reset);
         mbuttonOuvrir = findViewById(R.id.openusrdata);
         mbuttonProtocole = findViewById(R.id.protocole);
         mtextMesures = findViewById(R.id.tvNbMesures);
@@ -153,6 +155,21 @@ public class HomeActivity extends AppCompatActivity implements ActivityCompat.On
         mbuttonManette.setOnClickListener(enablebtListener);
         //mbuttonTutoriel.setOnClickListener(enablebtListener);
         getRequiredPermissions();
+
+
+
+        // Affiche la dernière mesure si le nom renseigné correspond à celui de la dernière mesure réalisée
+        mbuttonBluetoothReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.remove("device_address");
+                editor.apply();
+                Toast.makeText(getApplicationContext(), "bluetooth settings reset", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         // Affiche la dernière mesure si le nom renseigné correspond à celui de la dernière mesure réalisée
         mbuttonOuvrir.setOnClickListener(new View.OnClickListener() {
