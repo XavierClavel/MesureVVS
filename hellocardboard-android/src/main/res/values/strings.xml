@@ -27,6 +27,7 @@
     <string name="button_scan">Scan for devices</string>
     <string name="btn_manette">Remote</string>
     <string name="btn_ecran">Screen</string>
+    <string name="bluetooth_reset">Bluetooth Reset</string>
     <string name="display_result">Result=</string>
     <string name="btn_stop">Stop</string>
     <string name="btn_result">result</string>
